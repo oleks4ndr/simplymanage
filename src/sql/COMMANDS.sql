@@ -100,7 +100,7 @@ CREATE TABLE loan_details (
     -- update user info like name...
     -- update item data (description, name)
     -- update loans (l_checked_in_at) :: checking them in
-
+	-- 
 -- Delete data (GARY)
     -- deleting category
     -- deleting items
