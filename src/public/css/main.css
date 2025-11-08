@@ -407,7 +407,11 @@ button.btn {
 	box-shadow: 0 0 0 3px rgba(31, 182, 230, 0.15);
 }
 button.btn {
-	margin-top: var(--space-lg);
+	display: block;
+	width: 100%;
+	max-width: 200px;
+	margin: var(--space-lg) auto;
+	text-align: center;
 }
 
 /* =========================
