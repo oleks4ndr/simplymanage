@@ -1,17 +1,25 @@
 <nav class="navbar">
 	<div class="container">
 		<a href="/" class="brand">SimplyManage</a>
+
 		<ul class="nav-links">
-			<li><a href="/">Home</a></li>
-			<li><a href="/items">Inventory</a></li>
-			<li><a href="/suppliers">Suppliers</a></li>
-			<li><a href="/reports">Reports</a></li>
+			<li><a href="/items">Catalog</a></li>
+			<li><a href="/loans">My Loans</a></li>
+			<li><a href="/contact">Contact</a></li>
+			<li><a href="/about">About</a></li>
+			<li><a href="/cart">Cart</a></li>
 		</ul>
+
+		<div class="auth">
+			{{#if isAuthenticated}}
+				<span class="user">Hello, {{user.name}}</span>
+				<form action="/auth/logout" method="post" style="display:inline">
+					<button type="submit" class="btn btn-ghost">Sign out</button>
+				</form>
+			{{else}}
+				<a class="btn btn-ghost" href="/auth/login">Sign in</a>
+				<a class="btn btn-pill" href="/auth/register">Register</a>
+			{{/if}}
+		</div>
 	</div>
 </nav>
-
-<!--
-  This is a simple navbar partial. To customize the active link, you can
-  pass context to the view and compare here, or enhance this partial to
-  accept parameters like `active`.
--->

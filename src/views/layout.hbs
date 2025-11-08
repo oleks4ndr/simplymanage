@@ -3,12 +3,50 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Simply Manage</title>
+		<link rel="stylesheet" href="/css/main.css" />
 	</head>
 	<body>
 		{{> navbar}}
+		<div class="view-container">
+			{{{body}}}
+		</div>
 
-		{{{body}}}
-
-		<script type="module" src="../public/js/main.js"></script>
+		<script type="module" src="/js/main.js"></script>
 	</body>
+	<footer class="site-footer">
+		<div class="container footer-grid">
+			<div class="socials">
+				<div class="footer-by">Created By</div>
+				<a href="#"><span>Oleksandr Anyshchenko</span></a>
+				<a href="#"><span>Ryan Opande</span></a>
+				<a href="#"><span>Jiaqi Wang</span></a>
+				<a href="#"><span>Ziqi Gu</span></a>
+			</div>
+
+			<div class="footer-col">
+				<h4>Use cases</h4>
+				<ul>
+					<li>Inventory Management</li>
+					<li>Equipment Check-in</li>
+					<li>Equipment Check-out</li>
+					<li>Loan Creation</li>
+					<li>Loan Management</li>
+					<li>Asset Organization</li>
+					<li>Team Collaboration</li>
+				</ul>
+			</div>
+
+			<div class="footer-col">
+				<h4>Resources</h4>
+				<ul>
+					<li><a href="/profile">My Profile</a></li>
+					<li><a href="/cart">Cart</a></li>
+					<li><a href="/about">About</a></li>
+					<li><a href="/contact">Contact</a></li>
+					<li><a href="/loans">My Loans</a></li>
+					<li><a href="/items">Catalog</a></li>
+				</ul>
+			</div>
+		</div>
+	</footer>
 </html>

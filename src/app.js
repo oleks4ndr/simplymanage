@@ -5,8 +5,9 @@ import express from 'express';
 import session from 'express-session';
 import path from 'path';
 import url from 'url';
-import MySQLStore from 'express-mysql-session';
-import { pool } from './db.js';
+import mysqlSession from 'express-mysql-session';
+import { pool, query } from './db.js';
+import authRoutes from './routes/auth.js';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -14,11 +15,20 @@ const app = express();
 
 app.set('view engine', 'hbs');
 
-// Middleware and Sessions
+// ensure Express uses the views directory inside src
+app.set('views', path.join(__dirname, 'views'));
+
+import hbs from 'hbs';
+// register partials directory so {{> navbar}} works
+hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// ------ Middleware and Sessions ----------
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false}));
 
-const sessionStore = new MySQLStore({}, pool.promise ? pool.promise() : pool);
+// express-mysql-session exports a factory that needs the session module
+const MySQLStore = mysqlSession(session);
+const sessionStore = new MySQLStore({}, pool);
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'change-this',
@@ -32,3 +42,40 @@ app.use(session({
   }
 }));
 
+app.use(async (req, res, next) => {
+  res.locals.user = null;
+  res.locals.isAdmin = false;
+  res.locals.isAuthenticated = false;
+
+  try {
+    if (req.session && req.session.userId) {
+      // Fetch fresh user from DB
+      const rows = await query('SELECT id, name, role FROM users WHERE id = ?', [req.session.userId]);
+      if (rows[0]) {
+        res.locals.user = rows[0];
+        res.locals.isAuthenticated = true;
+        res.locals.isAdmin = rows[0].role === 'admin';
+      }
+    }
+  } catch (err) {
+    return next(err);
+  }
+  next();
+});
+
+// ------ Helper Functions ----------
+function requireAdmin(req, res, next) {
+  if (res.locals.isAdmin) return next();
+  res.status(403).send('Forbidden');
+}
+
+// ------ Main Routes ----------
+app.get('/', (req, res) => {
+  return res.render('landing');
+});
+
+// Mount auth routes
+app.use('/auth', authRoutes);
+
+// ------ Start Server ----------
+app.listen(process.env.PORT ?? 3000);
