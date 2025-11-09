@@ -50,18 +50,17 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE sp_update_asset(
-    IN p_a_id INT,
-    IN p_new_status VARCHAR(20),     
-    IN p_new_condition VARCHAR(20),  
-    IN p_new_loc_id INT              
+DROP PROCEDURE IF EXISTS sp_loan_updates//
+CREATE PROCEDURE sp_loan_updates(
+    IN p_l_id INT
 )
 BEGIN
-    UPDATE assets
-       SET a_status    = p_new_status,
-           a_condition = p_new_condition,
-           loc_id      = p_new_loc_id
-     WHERE a_id        = p_a_id;
+    START TRANSACTION;
+    UPDATE loans
+       SET l_status = 'open'
+     WHERE l_id = p_l_id;
+
+    COMMIT;
 END//
 
 DELIMITER ;
