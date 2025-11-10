@@ -6,7 +6,7 @@ USE inventory_management;
 CREATE TABLE item_modification_history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
     it_id INT,
-    action_type ENUM('INSERT', 'UPDATE', 'DELETE'),
+    action_type CHAR(6),
     old_info JSON,
     new_info JSON,
     modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -84,6 +84,6 @@ DELIMITER $$
 CREATE OR REPLACE PROCEDURE delete_user(in p_u_id INT)
 BEGIN 
     DELETE FROM users
-    WHERE users.loc_id = p_u_id;
+    WHERE users.u_id = p_u_id;
 END$$
 DELIMITER ; 
