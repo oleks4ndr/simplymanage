@@ -77,7 +77,7 @@ CREATE TABLE loan_details (
     FOREIGN KEY (a_id) REFERENCES assets(a_id)
 );
 
--- Retrieve data (ALEKS AND RYAN)
+-- Retrieve data
     -- retrieve user data (for session)
 SELECT 
     u_id,
@@ -174,7 +174,7 @@ JOIN items AS i        ON a.it_id = i.it_id
 WHERE u.u_fname = 'Aisha' AND u.u_lname = 'Khan'; -- name can be replaced to match anyone who took a loan
 
 
--- Add data
+-- Adding data commands:
     -- add user to users table (sign up) 
 INSERT INTO users (u_id, u_fname, u_lname, u_email, u_role, u_password, u_active) VALUES
 (1, 'Aisha',   'Khan',     'aisha.khan@uni.edu',     'user',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
@@ -281,17 +281,187 @@ INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
 (9,  'Drone Locker',     'Building B, Room 205'),
 (10, 'Overflow Storage', 'Building C, Room 301');
 
--- Update data (JIAQI)
-    -- update user info like name...
-    -- update item data (description, name)
-    -- update loans (l_checked_in_at) :: checking them in
+-- Updating data commands:
 
--- Delete data (GARY)
-    -- deleting category
-    -- deleting items
-    -- deleting specific assets
-    -- deleting users
-    -- deleting loans (discarding them)
+    -- update user info like name...
+DELIMITER //
+
+CREATE PROCEDURE sp_update_user_info(
+    IN p_u_id INT,
+    IN p_fname VARCHAR(20),
+    IN p_lname VARCHAR(20),
+    IN p_email VARCHAR(20),
+    IN p_role  VARCHAR(12),
+    IN p_active BOOLEAN
+)
+BEGIN
+    UPDATE users
+    SET u_fname = p_fname,
+        u_lname = p_lname,
+        u_email = p_email,
+        u_role  = p_role,
+        u_active = p_active
+    WHERE u_id = p_u_id;
+END//
+
+DELIMITER ;
+
+    -- move item to category
+DELIMITER //
+
+CREATE PROCEDURE sp_move_item_to_category(
+    IN p_it_id INT,
+    IN p_new_cat_id INT
+)
+BEGIN
+    UPDATE items
+       SET cat_id = p_new_cat_id
+     WHERE it_id  = p_it_id;
+END//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE sp_set_category_parent(
+    IN p_cat_id INT,
+    IN p_new_parent_id INT 
+)
+BEGIN
+    UPDATE categories
+       SET cat_parent_id = p_new_parent_id
+     WHERE cat_id = p_cat_id;
+END//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+DROP PROCEDURE IF EXISTS sp_loan_updates//
+CREATE PROCEDURE sp_loan_updates(
+    IN p_l_id INT
+)
+BEGIN
+    START TRANSACTION;
+    UPDATE loans
+       SET l_status = 'open'
+     WHERE l_id = p_l_id;
+
+    COMMIT;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_checkout_updates(
+    IN p_l_id INT,  
+    IN p_a_id INT    
+)
+BEGIN
+    START TRANSACTION;
+    UPDATE assets
+       SET a_status = 'checked_out'
+     WHERE a_id = p_a_id;
+    UPDATE loans
+       SET l_status = 'open'
+     WHERE l_id = p_l_id;
+    COMMIT;
+END//
+
+DELIMITER ;
+
+-- Deleting data commands:
+
+-- deleting loan details according to l_id and a_id(their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_loan_details(in p_l_id INT, in p_a_id INT)
+BEGIN 
+    DELETE FROM loan_details
+    WHERE loan_details.l_id = p_l_id AND loan_details.a_id = p_a_id;
+END$$
+DELIMITER ; 
+
+
+
+-- deleting loans according to l_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_loans(in p_l_id INT)
+BEGIN 
+    DELETE FROM loans
+    WHERE loans.l_id = p_l_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting assets according to a_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_asset(in p_a_id INT)
+BEGIN 
+    DELETE FROM assets
+    WHERE assets.a_id = p_a_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting item according to it_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_item(in p_it_id INT)
+BEGIN 
+    DELETE FROM items
+    WHERE items.it_id = p_it_id;
+END$$
+DELIMITER ; 
+
+-- delete the categories, this procedure will delete a category and raise its children to this level
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_category_relink(IN p_cat_id INT)
+BEGIN
+    DECLARE parent_id INT;
+
+    -- get parent of current node
+    SELECT cat_parent_id INTO parent_id FROM categories WHERE cat_id = p_cat_id;
+
+    -- if this node has children, reassign their parent
+    UPDATE categories
+    SET cat_parent_id = parent_id
+    WHERE cat_parent_id = p_cat_id;
+
+    -- update categories_children table accordingly
+    -- 1) find children
+    UPDATE categories_children
+    SET cat_id = parent_id
+    WHERE cat_id = p_cat_id;
+
+    -- 2) remove any self-reference entry to avoid cycles
+    DELETE FROM categories_children WHERE cat_child_id = p_cat_id;
+
+    -- finally delete the node itself
+    DELETE FROM categories WHERE cat_id = p_cat_id;
+END$$
+DELIMITER ;
+
+
+-- deleting location according to loc_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_location(in p_loc_id INT)
+BEGIN 
+    DELETE FROM locations
+    WHERE locations.loc_id = p_loc_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting user according to loc_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_user(in p_u_id INT)
+BEGIN 
+    DELETE FROM users
+    WHERE users.u_id = p_u_id;
+END$$
+DELIMITER ; 
 
 -- ADVANCED FUNCTIONS (ONE EACH)
     -- audit history of who added items or categories (TRIGGER) (ALEKS)
