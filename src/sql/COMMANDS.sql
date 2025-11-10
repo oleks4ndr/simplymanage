@@ -83,8 +83,48 @@ CREATE TABLE loan_details (
     -- retrieve items for each category (specifying the category)
     -- retrieve assets per item (only for staff/admin functionality)
     -- retrieve locations for items
+SELECT 
+    i.it_id,
+    i.it_name,
+    a.a_id        AS asset_id,
+    l.loc_id,
+    l.loc_name,
+    l.loc_address
+FROM items AS i
+JOIN assets AS a      ON i.it_id = a.it_id
+JOIN locations AS l   ON a.loc_id = l.loc_id
+ORDER BY i.it_name, a.a_id;
     -- retrieve all loans
-    -- retrieve specific loan info
+SELECT
+    l.l_id,
+    u.u_fname,
+    u.u_lname,
+    u.u_role,
+    l.l_status,
+    l.l_checked_out_at,
+    l.l_due_at,
+    l.l_checked_in_at,
+    l.l_notes
+FROM loans AS l
+JOIN users AS u ON l.u_id = u.u_id
+ORDER BY l.l_checked_out_at DESC;
+    -- retrieve specific loan info(by user name)
+SELECT
+    l.l_id,
+    u.u_fname,
+    u.u_lname,
+    l.l_status,
+    l.l_checked_out_at,
+    l.l_due_at,
+    l.l_checked_in_at,
+    i.it_name,
+    a.a_id
+FROM loans AS l
+JOIN users AS u        ON l.u_id = u.u_id
+JOIN loan_details AS ld ON l.l_id = ld.l_id
+JOIN assets AS a       ON ld.a_id = a.a_id
+JOIN items AS i        ON a.it_id = i.it_id
+WHERE u.u_fname = 'Aisha' AND u.u_lname = 'Khan'; -- name can be replaced to match anyone who took a loan
 
 
 -- Add data (DONE)
