@@ -468,6 +468,29 @@ DELIMITER ;
     -- audit history of who modified items (TRIGGER) (GARY)
     -- CHECK constraint for unique email per user (JIAQI)
     -- audit history of user role changing (TRIGGER) (RYAN)
+CREATE TABLE user_role_audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    uid INT NOT NULL,
+    old_role VARCHAR(12),
+    new_role VARCHAR(12),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed_by VARCHAR(50)
+);
+
+DELIMITER $$
+
+CREATE TRIGGER trg_user_role_audit
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+    IF OLD.urole <> NEW.urole THEN
+        INSERT INTO user_role_audit (uid, old_role, new_role, changed_by)
+        VALUES (OLD.uid, OLD.urole, NEW.urole, USER());
+    END IF;
+END $$
+
+DELIMITER ;
+
 
 -- Check Constraint (Jiaqi):
 ALTER TABLE users
