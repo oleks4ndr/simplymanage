@@ -13,6 +13,7 @@ CREATE TABLE users (
     u_lname VARCHAR(20),
     u_email VARCHAR(20),
     u_role VARCHAR(12),
+    u_password VARCHAR(255),
     u_active BOOLEAN,
     PRIMARY KEY (u_id)
 );
