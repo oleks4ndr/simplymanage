@@ -68,18 +68,16 @@ DELIMITER ;
 
 DELIMITER //
 
-CREATE PROCEDURE sp_checkout_updates(
-    IN p_l_id INT,  
-    IN p_a_id INT    
+DROP PROCEDURE IF EXISTS sp_loan_updates//
+CREATE PROCEDURE sp_loan_updates(
+    IN p_l_id INT
 )
 BEGIN
     START TRANSACTION;
-    UPDATE assets
-       SET a_status = 'checked_out'
-     WHERE a_id = p_a_id;
     UPDATE loans
        SET l_status = 'open'
      WHERE l_id = p_l_id;
+
     COMMIT;
 END//
 
