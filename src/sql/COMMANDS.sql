@@ -298,3 +298,7 @@ INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
     -- audit history of who modified items (TRIGGER) (GARY)
     -- CHECK constraint for unique email per user (JIAQI)
     -- audit history of user role changing (TRIGGER) (RYAN)
+
+-- Check Constraint (Jiaqi):
+ALTER TABLE users
+  ADD CONSTRAINT uq_users_email UNIQUE (u_email);
