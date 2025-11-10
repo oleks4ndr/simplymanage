@@ -1,11 +1,13 @@
+USE inventory_management;
 DELIMITER //
-
+DROP PROCEDURE IF EXISTS sp_update_user_info //
 CREATE PROCEDURE sp_update_user_info(
     IN p_u_id INT,
     IN p_fname VARCHAR(20),
     IN p_lname VARCHAR(20),
     IN p_email VARCHAR(20),
     IN p_role  VARCHAR(12),
+    IN p_password VARCHAR(255),
     IN p_active BOOLEAN
 )
 BEGIN
@@ -14,6 +16,7 @@ BEGIN
         u_lname = p_lname,
         u_email = p_email,
         u_role  = p_role,
+        u_password = p_password,
         u_active = p_active
     WHERE u_id = p_u_id;
 END//
