@@ -77,7 +77,7 @@ CREATE TABLE loan_details (
     FOREIGN KEY (a_id) REFERENCES assets(a_id)
 );
 
--- Retrieve data
+-- Retrieve data (ALEKS AND RYAN)
     -- retrieve user data (for session)
 SELECT 
     u_id,
@@ -281,7 +281,7 @@ INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
 (9,  'Drone Locker',     'Building B, Room 205'),
 (10, 'Overflow Storage', 'Building C, Room 301');
 
--- Updating data commands:
+-- Updating data commands (JIAQI)
 
     -- update user info like name...
 DELIMITER //
@@ -373,7 +373,7 @@ END//
 
 DELIMITER ;
 
--- Deleting data commands:
+-- Deleting data commands (ZIQI)
 
 -- deleting loan details according to l_id and a_id(their PK)
 DELIMITER $$
