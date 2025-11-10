@@ -454,7 +454,7 @@ END$$
 DELIMITER ; 
 
 
--- deleting user according to loc_id (their PK)
+-- deleting user according to their id (their PK)
 DELIMITER $$
 CREATE OR REPLACE PROCEDURE delete_user(in p_u_id INT)
 BEGIN 
@@ -463,10 +463,146 @@ BEGIN
 END$$
 DELIMITER ; 
 
--- ADVANCED FUNCTIONS (ONE EACH)
+
+
+
+
+
+
+
+
+
+
+
+-- ADVANCED FUNCTIONS
     -- audit history of who added items or categories (TRIGGER) (ALEKS)
+CREATE TABLE item_additions_history (
+    addition_id INT AUTO_INCREMENT PRIMARY KEY,
+    entity_type ENUM('ITEM','CATEGORY') NOT NULL, -- what was added
+    entity_id   INT NOT NULL,                     -- it_id or cat_id
+    added_by    INT NOT NULL,                     -- users.u_id
+    added_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (added_by) REFERENCES users(u_id)
+);
+
+DELIMITER $$
+
+-- when a new item is added
+CREATE TRIGGER item_additions_watchdog
+AFTER INSERT ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_additions_history (entity_type, entity_id, added_by)
+    VALUES ('ITEM', NEW.it_id, @current_user_id);
+END$$
+
+-- when a new category is added
+CREATE TRIGGER category_additions_watchdog
+AFTER INSERT ON categories
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_additions_history (entity_type, entity_id, added_by)
+    VALUES ('CATEGORY', NEW.cat_id, @current_user_id);
+END$$
+
+DELIMITER ;
+
     -- audit history of who modified items (TRIGGER) (GARY)
+CREATE TABLE item_modification_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    it_id INT,
+    action_type CHAR(6),
+    old_info JSON,
+    new_info JSON,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (it_id) REFERENCES items(it_id)
+);
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_insert
+AFTER INSERT ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, new_row)
+    VALUES (
+        NEW.it_id,
+        'INSERT',
+        JSON_OBJECT(
+            'it_id', NEW.it_id,
+            'it_name', NEW.it_name,
+            'it_sku', NEW.it_sku,
+            'it_description', NEW.it_description,
+            'it_max_time_out', NEW.it_max_time_out,
+            'it_active', NEW.it_active,
+            'it_renewable', NEW.it_renewable,
+            'cat_id', NEW.cat_id
+        )
+    );
+END@@
+DELIMITER ;
+
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_update
+AFTER UPDATE ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, old_row, new_row)
+    VALUES (
+        NEW.it_id,
+        'UPDATE',
+        JSON_OBJECT(
+            'it_id', OLD.it_id,
+            'it_name', OLD.it_name,
+            'it_sku', OLD.it_sku,
+            'it_description', OLD.it_description,
+            'it_max_time_out', OLD.it_max_time_out,
+            'it_active', OLD.it_active,
+            'it_renewable', OLD.it_renewable,
+            'cat_id', OLD.cat_id
+        ),
+        JSON_OBJECT(
+            'it_id', NEW.it_id,
+            'it_name', NEW.it_name,
+            'it_sku', NEW.it_sku,
+            'it_description', NEW.it_description,
+            'it_max_time_out', NEW.it_max_time_out,
+            'it_active', NEW.it_active,
+            'it_renewable', NEW.it_renewable,
+            'cat_id', NEW.cat_id
+        )
+    );
+END@@
+DELIMITER ;
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_delete
+AFTER DELETE ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, old_row)
+    VALUES (
+        OLD.it_id,
+        'DELETE',
+        JSON_OBJECT(
+            'it_id', OLD.it_id,
+            'it_name', OLD.it_name,
+            'it_sku', OLD.it_sku,
+            'it_description', OLD.it_description,
+            'it_max_time_out', OLD.it_max_time_out,
+            'it_active', OLD.it_active,
+            'it_renewable', OLD.it_renewable,
+            'cat_id', OLD.cat_id
+        )
+    );
+END@@
+DELIMITER ;
     -- CHECK constraint for unique email per user (JIAQI)
+
+-- Check Constraint (Jiaqi):
+ALTER TABLE users
+  ADD CONSTRAINT uq_users_email UNIQUE (u_email);
+
     -- audit history of user role changing (TRIGGER) (RYAN)
 CREATE TABLE user_role_audit (
     audit_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -490,8 +626,3 @@ BEGIN
 END $$
 
 DELIMITER ;
-
-
--- Check Constraint (Jiaqi):
-ALTER TABLE users
-  ADD CONSTRAINT uq_users_email UNIQUE (u_email);
