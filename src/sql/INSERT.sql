@@ -1,17 +1,17 @@
 /* USERS (12) */
-INSERT INTO users (u_id, u_fname, u_lname, u_email, u_role, u_active) VALUES
-(1, 'Aisha',   'Khan',     'aisha.khan@uni.edu',     'student', 1),
-(2, 'Ben',     'Lopez',    'ben.lopez@uni.edu',      'student', 1),
-(3, 'Chloe',   'Ng',       'chloe.ng@uni.edu',       'student', 1),
-(4, 'Diego',   'Rossi',    'diego.rossi@uni.edu',    'student', 1),
-(5, 'Evan',    'Patel',    'evan.patel@uni.edu',     'student', 1),
-(6, 'Fatima',  'Hassan',   'fatima.h@uni.edu',       'faculty', 1),
-(7, 'Grace',   'Lee',      'grace.lee@uni.edu',      'faculty', 1),
-(8, 'Hiro',    'Tanaka',   'hiro.t@uni.edu',         'staff',   1),
-(9, 'Imani',   'Brooks',   'imani.b@uni.edu',        'staff',   1),
-(10,'Jonas',   'Meyer',    'jonas.m@uni.edu',        'admin',   1),
-(11,'Keira',   'Smith',    'keira.s@uni.edu',        'student', 0),
-(12,'Leo',     'Martinez', 'leo.m@uni.edu',          'student', 1);
+INSERT INTO users (u_id, u_fname, u_lname, u_email, u_role, u_password, u_active) VALUES
+(1, 'Aisha',   'Khan',     'aisha.khan@uni.edu',     'user',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
+(2, 'Ben',     'Lopez',    'ben.lopez@uni.edu',      'user',  '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', 1),
+(3, 'Chloe',   'Ng',       'chloe.ng@uni.edu',       'user',  '$2y$10$vI8aWBnW3fID.ZQ4/zo1G.q1lRps.9cGLcZEiGDMVr5yUP1KUOYTa', 1),
+(4, 'Diego',   'Rossi',    'diego.rossi@uni.edu',    'user',  '$2y$10$YKEbAjM7VZhVjKL3Nh2oOe8jGWBTnHh0jJ0wZvKqN5Fj8WZhJ7K8m', 1),
+(5, 'Evan',    'Patel',    'evan.patel@uni.edu',     'user',  '$2y$10$N9qo3uLOickgx2ZoFQ1q3.BxY3CGQJ3EKc8Gv2J1GhJ2vY8GzH9Km', 1),
+(6, 'Fatima',  'Hassan',   'fatima.h@uni.edu',       'staff', '$2y$10$wGhRjM8KqN5Pj2LmN9oQx.7YZhN8VjKqL2JmG8HjK9LmN5PjQx2Km', 1),
+(7, 'Grace',   'Lee',      'grace.lee@uni.edu',      'admin', '$2y$10$zQaDT8hXM4pLmBdwN0xEseda/oKJAQKMKMzUrV8jbs6Epz28BXzBS', 1),
+(8, 'Hiro',    'Tanaka',   'hiro.t@uni.edu',         'staff', '$2y$10$eJkL9mN2oP3qR4sT5uV6w.8ZaKbL9MdN2oPe3QfR4gS5hT6iU7jVm', 1),
+(9, 'Imani',   'Brooks',   'imani.b@uni.edu',        'staff', '$2y$10$fKlM8nN3pO4qS5tT6vU7x.9ZbLcM8NeO3pQf4RgS5hT6iU8jV9kWm', 1),
+(10,'Jonas',   'Meyer',    'jonas.m@uni.edu',        'admin', '$2y$10$gLmN9oO4pP5qT6uU7vV8y.0ZcMdN9OfP4qQg5ShT6iU9jV0kW1lXm', 1),
+(11,'Keira',   'Smith',    'keira.s@uni.edu',        'user',  '$2y$10$hMnO0pP5qQ6uU7vV8wW9z.1ZdNeO0pGq5rRh6TiU0kV1lW2mX3nYm', 0),
+(12,'Leo',     'Martinez', 'leo.m@uni.edu',          'user',  '$2y$10$iNoP1qQ6rR7vV8wW9xX0a.2ZeOfP1qHr6sSi7TjV1lW2mX3nY4oZm', 1);
 
 /* CATEGORIES (10) */
 INSERT INTO categories (cat_id, cat_name, cat_parent_id) VALUES
@@ -163,26 +163,3 @@ INSERT INTO loan_details (l_id, a_id) VALUES
 -- Loan 12 (Leo) : Drone + extra battery
 (12, 24),
 (12, 19);
-
-/* ===========================
-   QUICK VERIFICATION QUERIES
-   (use for screenshots)
-   =========================== */
--- Example: show row counts for each table
--- SELECT COUNT(*) AS users_count        FROM users;
--- SELECT COUNT(*) AS categories_count   FROM categories;
--- SELECT COUNT(*) AS cat_children_count FROM categories_children;
--- SELECT COUNT(*) AS items_count        FROM items;
--- SELECT COUNT(*) AS locations_count    FROM locations;
--- SELECT COUNT(*) AS assets_count       FROM assets;
--- SELECT COUNT(*) AS loans_count        FROM loans;
--- SELECT COUNT(*) AS loan_details_count FROM loan_details;
-
--- Example: simple JOIN to show “practical” data view (loan -> user -> assets -> items)
--- SELECT l.l_id, l.l_status, u.u_fname, u.u_lname, a.a_id, i.it_name
--- FROM loans l
--- JOIN users u ON u.u_id = l.u_id
--- JOIN loan_details ld ON ld.l_id = l.l_id
--- JOIN assets a ON a.a_id = ld.a_id
--- JOIN items i ON i.it_id = a.it_id
--- ORDER BY l.l_id, a.a_id;
