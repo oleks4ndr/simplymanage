@@ -285,13 +285,14 @@ INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
 
     -- update user info like name...
 DELIMITER //
-
+DROP PROCEDURE IF EXISTS sp_update_user_info //
 CREATE PROCEDURE sp_update_user_info(
     IN p_u_id INT,
     IN p_fname VARCHAR(20),
     IN p_lname VARCHAR(20),
     IN p_email VARCHAR(20),
     IN p_role  VARCHAR(12),
+    IN p_password VARCHAR(255),
     IN p_active BOOLEAN
 )
 BEGIN
@@ -300,13 +301,13 @@ BEGIN
         u_lname = p_lname,
         u_email = p_email,
         u_role  = p_role,
+        u_password = p_password,
         u_active = p_active
     WHERE u_id = p_u_id;
 END//
 
 DELIMITER ;
 
-    -- move item to category
 DELIMITER //
 
 CREATE PROCEDURE sp_move_item_to_category(
@@ -320,7 +321,6 @@ BEGIN
 END//
 
 DELIMITER ;
-
 
 DELIMITER //
 
@@ -336,40 +336,39 @@ END//
 
 DELIMITER ;
 
-
 DELIMITER //
 
-DROP PROCEDURE IF EXISTS sp_loan_updates//
-CREATE PROCEDURE sp_loan_updates(
-    IN p_l_id INT
+CREATE PROCEDURE sp_update_asset(
+    IN p_a_id INT,
+    IN p_new_status VARCHAR(20),     
+    IN p_new_condition VARCHAR(20),  
+    IN p_new_loc_id INT              
 )
 BEGIN
-    START TRANSACTION;
-    UPDATE loans
-       SET l_status = 'open'
-     WHERE l_id = p_l_id;
-
-    COMMIT;
+    UPDATE assets
+       SET a_status    = p_new_status,
+           a_condition = p_new_condition,
+           loc_id      = p_new_loc_id
+     WHERE a_id        = p_a_id;
 END//
 
 DELIMITER ;
 
 DELIMITER //
-
-CREATE PROCEDURE sp_checkout_updates(
-    IN p_l_id INT,  
-    IN p_a_id INT    
+DROP PROCEDURE IF EXISTS sp_loan_updates//
+CREATE PROCEDURE sp_loan_updates(
+    IN p_l_id INT,
+    IN p_l_status VARCHAR(20)
 )
 BEGIN
     START TRANSACTION;
-    UPDATE assets
-       SET a_status = 'checked_out'
-     WHERE a_id = p_a_id;
     UPDATE loans
-       SET l_status = 'open'
+       SET l_status = p_l_status
      WHERE l_id = p_l_id;
+
     COMMIT;
 END//
+
 
 DELIMITER ;
 
