@@ -70,19 +70,20 @@ END//
 DELIMITER ;
 
 DELIMITER //
-
 DROP PROCEDURE IF EXISTS sp_loan_updates//
 CREATE PROCEDURE sp_loan_updates(
-    IN p_l_id INT
+    IN p_l_id INT,
+    IN p_l_status VARCHAR(20)
 )
 BEGIN
     START TRANSACTION;
     UPDATE loans
-       SET l_status = 'open'
+       SET l_status = p_l_status
      WHERE l_id = p_l_id;
 
     COMMIT;
 END//
+
 
 DELIMITER ;
 
