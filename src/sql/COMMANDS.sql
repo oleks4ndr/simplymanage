@@ -174,7 +174,7 @@ JOIN items AS i        ON a.it_id = i.it_id
 WHERE u.u_fname = 'Aisha' AND u.u_lname = 'Khan'; -- name can be replaced to match anyone who took a loan
 
 
--- Add data
+-- Adding data commands:
     -- add user to users table (sign up) 
 INSERT INTO users (u_id, u_fname, u_lname, u_email, u_role, u_password, u_active) VALUES
 (1, 'Aisha',   'Khan',     'aisha.khan@uni.edu',     'user',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1),
@@ -281,24 +281,347 @@ INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
 (9,  'Drone Locker',     'Building B, Room 205'),
 (10, 'Overflow Storage', 'Building C, Room 301');
 
--- Update data (JIAQI)
+-- Updating data commands (JIAQI)
+
     -- update user info like name...
-    -- update item data (description, name)
-    -- update loans (l_checked_in_at) :: checking them in
+DELIMITER //
+DROP PROCEDURE IF EXISTS sp_update_user_info //
+CREATE PROCEDURE sp_update_user_info(
+    IN p_u_id INT,
+    IN p_fname VARCHAR(20),
+    IN p_lname VARCHAR(20),
+    IN p_email VARCHAR(20),
+    IN p_role  VARCHAR(12),
+    IN p_password VARCHAR(255),
+    IN p_active BOOLEAN
+)
+BEGIN
+    UPDATE users
+    SET u_fname = p_fname,
+        u_lname = p_lname,
+        u_email = p_email,
+        u_role  = p_role,
+        u_password = p_password,
+        u_active = p_active
+    WHERE u_id = p_u_id;
+END//
 
--- Delete data (GARY)
-    -- deleting category
-    -- deleting items
-    -- deleting specific assets
-    -- deleting users
-    -- deleting loans (discarding them)
+DELIMITER ;
 
--- ADVANCED FUNCTIONS (ONE EACH)
+DELIMITER //
+
+CREATE PROCEDURE sp_move_item_to_category(
+    IN p_it_id INT,
+    IN p_new_cat_id INT
+)
+BEGIN
+    UPDATE items
+       SET cat_id = p_new_cat_id
+     WHERE it_id  = p_it_id;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_set_category_parent(
+    IN p_cat_id INT,
+    IN p_new_parent_id INT 
+)
+BEGIN
+    UPDATE categories
+       SET cat_parent_id = p_new_parent_id
+     WHERE cat_id = p_cat_id;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_update_asset(
+    IN p_a_id INT,
+    IN p_new_status VARCHAR(20),     
+    IN p_new_condition VARCHAR(20),  
+    IN p_new_loc_id INT              
+)
+BEGIN
+    UPDATE assets
+       SET a_status    = p_new_status,
+           a_condition = p_new_condition,
+           loc_id      = p_new_loc_id
+     WHERE a_id        = p_a_id;
+END//
+
+DELIMITER ;
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS sp_loan_updates//
+CREATE PROCEDURE sp_loan_updates(
+    IN p_l_id INT,
+    IN p_l_status VARCHAR(20)
+)
+BEGIN
+    START TRANSACTION;
+    UPDATE loans
+       SET l_status = p_l_status
+     WHERE l_id = p_l_id;
+
+    COMMIT;
+END//
+
+
+DELIMITER ;
+
+-- Deleting data commands (ZIQI)
+
+-- deleting loan details according to l_id and a_id(their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_loan_details(in p_l_id INT, in p_a_id INT)
+BEGIN 
+    DELETE FROM loan_details
+    WHERE loan_details.l_id = p_l_id AND loan_details.a_id = p_a_id;
+END$$
+DELIMITER ; 
+
+
+
+-- deleting loans according to l_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_loans(in p_l_id INT)
+BEGIN 
+    DELETE FROM loans
+    WHERE loans.l_id = p_l_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting assets according to a_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_asset(in p_a_id INT)
+BEGIN 
+    DELETE FROM assets
+    WHERE assets.a_id = p_a_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting item according to it_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_item(in p_it_id INT)
+BEGIN 
+    DELETE FROM items
+    WHERE items.it_id = p_it_id;
+END$$
+DELIMITER ; 
+
+-- delete the categories, this procedure will delete a category and raise its children to this level
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_category_relink(IN p_cat_id INT)
+BEGIN
+    DECLARE parent_id INT;
+
+    -- get parent of current node
+    SELECT cat_parent_id INTO parent_id FROM categories WHERE cat_id = p_cat_id;
+
+    -- if this node has children, reassign their parent
+    UPDATE categories
+    SET cat_parent_id = parent_id
+    WHERE cat_parent_id = p_cat_id;
+
+    -- update categories_children table accordingly
+    -- 1) find children
+    UPDATE categories_children
+    SET cat_id = parent_id
+    WHERE cat_id = p_cat_id;
+
+    -- 2) remove any self-reference entry to avoid cycles
+    DELETE FROM categories_children WHERE cat_child_id = p_cat_id;
+
+    -- finally delete the node itself
+    DELETE FROM categories WHERE cat_id = p_cat_id;
+END$$
+DELIMITER ;
+
+
+-- deleting location according to loc_id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_location(in p_loc_id INT)
+BEGIN 
+    DELETE FROM locations
+    WHERE locations.loc_id = p_loc_id;
+END$$
+DELIMITER ; 
+
+
+-- deleting user according to their id (their PK)
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE delete_user(in p_u_id INT)
+BEGIN 
+    DELETE FROM users
+    WHERE users.u_id = p_u_id;
+END$$
+DELIMITER ; 
+
+
+
+
+
+
+
+
+
+
+
+
+-- ADVANCED FUNCTIONS
     -- audit history of who added items or categories (TRIGGER) (ALEKS)
+CREATE TABLE item_additions_history (
+    addition_id INT AUTO_INCREMENT PRIMARY KEY,
+    entity_type ENUM('ITEM','CATEGORY') NOT NULL, -- what was added
+    entity_id   INT NOT NULL,                     -- it_id or cat_id
+    added_by    INT NOT NULL,                     -- users.u_id
+    added_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (added_by) REFERENCES users(u_id)
+);
+
+DELIMITER $$
+
+-- when a new item is added
+CREATE TRIGGER item_additions_watchdog
+AFTER INSERT ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_additions_history (entity_type, entity_id, added_by)
+    VALUES ('ITEM', NEW.it_id, @current_user_id);
+END$$
+
+-- when a new category is added
+CREATE TRIGGER category_additions_watchdog
+AFTER INSERT ON categories
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_additions_history (entity_type, entity_id, added_by)
+    VALUES ('CATEGORY', NEW.cat_id, @current_user_id);
+END$$
+
+DELIMITER ;
+
     -- audit history of who modified items (TRIGGER) (GARY)
+CREATE TABLE item_modification_history (
+    history_id INT AUTO_INCREMENT PRIMARY KEY,
+    it_id INT,
+    action_type CHAR(6),
+    old_info JSON,
+    new_info JSON,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (it_id) REFERENCES items(it_id)
+);
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_insert
+AFTER INSERT ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, new_row)
+    VALUES (
+        NEW.it_id,
+        'INSERT',
+        JSON_OBJECT(
+            'it_id', NEW.it_id,
+            'it_name', NEW.it_name,
+            'it_sku', NEW.it_sku,
+            'it_description', NEW.it_description,
+            'it_max_time_out', NEW.it_max_time_out,
+            'it_active', NEW.it_active,
+            'it_renewable', NEW.it_renewable,
+            'cat_id', NEW.cat_id
+        )
+    );
+END@@
+DELIMITER ;
+
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_update
+AFTER UPDATE ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, old_row, new_row)
+    VALUES (
+        NEW.it_id,
+        'UPDATE',
+        JSON_OBJECT(
+            'it_id', OLD.it_id,
+            'it_name', OLD.it_name,
+            'it_sku', OLD.it_sku,
+            'it_description', OLD.it_description,
+            'it_max_time_out', OLD.it_max_time_out,
+            'it_active', OLD.it_active,
+            'it_renewable', OLD.it_renewable,
+            'cat_id', OLD.cat_id
+        ),
+        JSON_OBJECT(
+            'it_id', NEW.it_id,
+            'it_name', NEW.it_name,
+            'it_sku', NEW.it_sku,
+            'it_description', NEW.it_description,
+            'it_max_time_out', NEW.it_max_time_out,
+            'it_active', NEW.it_active,
+            'it_renewable', NEW.it_renewable,
+            'cat_id', NEW.cat_id
+        )
+    );
+END@@
+DELIMITER ;
+
+DELIMITER @@
+CREATE OR REPLACE TRIGGER audit_item_delete
+AFTER DELETE ON items
+FOR EACH ROW
+BEGIN
+    INSERT INTO item_modification_history (it_id, action_type, old_row)
+    VALUES (
+        OLD.it_id,
+        'DELETE',
+        JSON_OBJECT(
+            'it_id', OLD.it_id,
+            'it_name', OLD.it_name,
+            'it_sku', OLD.it_sku,
+            'it_description', OLD.it_description,
+            'it_max_time_out', OLD.it_max_time_out,
+            'it_active', OLD.it_active,
+            'it_renewable', OLD.it_renewable,
+            'cat_id', OLD.cat_id
+        )
+    );
+END@@
+DELIMITER ;
     -- CHECK constraint for unique email per user (JIAQI)
-    -- audit history of user role changing (TRIGGER) (RYAN)
 
 -- Check Constraint (Jiaqi):
 ALTER TABLE users
   ADD CONSTRAINT uq_users_email UNIQUE (u_email);
+
+    -- audit history of user role changing (TRIGGER) (RYAN)
+CREATE TABLE user_role_audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    uid INT NOT NULL,
+    old_role VARCHAR(12),
+    new_role VARCHAR(12),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    changed_by VARCHAR(50)
+);
+
+DELIMITER $$
+
+CREATE TRIGGER trg_user_role_audit
+AFTER UPDATE ON users
+FOR EACH ROW
+BEGIN
+    IF OLD.urole <> NEW.urole THEN
+        INSERT INTO user_role_audit (uid, old_role, new_role, changed_by)
+        VALUES (OLD.uid, OLD.urole, NEW.urole, USER());
+    END IF;
+END $$
+
+DELIMITER ;
