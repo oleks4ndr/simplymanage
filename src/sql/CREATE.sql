@@ -1,8 +1,5 @@
 -- This code will create a database named "inventory_management", 
 -- and create the tables according to the schemas statment.
-DESCRIBE users;
-CREATE DATABASE inventory_management;
-
 USE inventory_management;
 
 -- creating tables
