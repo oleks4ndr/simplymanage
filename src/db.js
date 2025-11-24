@@ -1,5 +1,4 @@
 // src/db.js
-import './config.js';
 import mysql from 'mysql2/promise';
 
 export const pool = mysql.createPool({
@@ -12,6 +11,7 @@ export const pool = mysql.createPool({
 });
 
 export async function query(sql, params) {
+  console.debug('QUERY:', sql, '| PARAMS:', params);
   const [rows] = await pool.execute(sql, params);
   return rows;
 }

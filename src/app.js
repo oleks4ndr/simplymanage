@@ -8,17 +8,17 @@ import url from 'url';
 import mysqlSession from 'express-mysql-session';
 import { pool, query } from './db.js';
 import authRoutes from './routes/auth.js';
+import hbs from 'hbs';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
 const app = express();
+const PORT = process.env.PORT ?? 3000;
 
 app.set('view engine', 'hbs');
 
 // ensure Express uses the views directory inside src
 app.set('views', path.join(__dirname, 'views'));
 
-import hbs from 'hbs';
 // register partials directory so {{> navbar}} works
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
@@ -64,10 +64,34 @@ app.use(async (req, res, next) => {
 });
 
 // ------ Helper Functions ----------
+
+async function testDatabaseConnection() {
+  try {
+    const connection = await pool.getConnection();
+    console.log('Database connected successfully.');
+    connection.release();
+  } catch (err) {
+    console.error('Database connection failed:', err.code);
+    process.exit(1); // Stop the server
+  }
+}
+
 function requireAdmin(req, res, next) {
   if (res.locals.isAdmin) return next();
   res.status(403).send('Forbidden');
 }
+
+// ------ Test SQL DB ----------
+app.get('/test-db', async (req, res) => {
+  try {
+    const users = await query("SELECT * FROM users");
+    res.json(users);
+  } catch (err) {
+    console.error("DB Error:", err);
+    res.status(500).json({ error: "Database test failed" });
+  }
+});
+
 
 // ------ Main Routes ----------
 app.get('/', (req, res) => {
@@ -78,4 +102,12 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 
 // ------ Start Server ----------
-app.listen(process.env.PORT ?? 3000);
+async function startServer() {
+  await testDatabaseConnection();
+
+  app.listen(PORT, () => {
+    console.log(`App running at http://localhost:${PORT}/`);
+  });
+}
+
+startServer();

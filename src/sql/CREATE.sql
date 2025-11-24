@@ -1,6 +1,4 @@
--- This code will create a database named "inventory_management", 
--- and create the tables according to the schemas statment.
-USE inventory_management;
+USE simplymanage;
 
 -- creating tables
 CREATE TABLE users (
