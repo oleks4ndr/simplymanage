@@ -2,18 +2,18 @@ USE simplymanage;
 
 -- creating tables
 CREATE TABLE users (
-    u_id INT,
-    u_fname VARCHAR(20),
-    u_lname VARCHAR(20),
-    u_email VARCHAR(20),
-    u_role VARCHAR(12),
+    u_id INT AUTO_INCREMENT,
+    u_fname VARCHAR(50),
+    u_lname VARCHAR(50),
+    u_email VARCHAR(100) UNIQUE,
+    u_role VARCHAR(12) DEFAULT 'user',
     u_password VARCHAR(255),
-    u_active BOOLEAN,
+    u_active BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (u_id)
 );
 
 CREATE TABLE categories (
-    cat_id INT,
+    cat_id INT AUTO_INCREMENT,
     cat_name VARCHAR(20),
     cat_parent_id INT NULL,
     PRIMARY KEY (cat_id)
@@ -27,27 +27,28 @@ CREATE TABLE categories_children (
 );
 
 CREATE TABLE items (
-    it_id INT,
-    it_name VARCHAR(20),
-    it_sku VARCHAR(20),
+    it_id INT AUTO_INCREMENT,
+    it_name VARCHAR(100),
+    it_sku VARCHAR(50),
     it_description TEXT,
+    it_image_url VARCHAR(500),
     it_max_time_out INT,
-    it_active BOOL,
-    it_renewable BOOLEAN,
+    it_active BOOL DEFAULT TRUE,
+    it_renewable BOOLEAN DEFAULT FALSE,
     cat_id INT,
     PRIMARY KEY (it_id),
     FOREIGN KEY (cat_id) REFERENCES categories(cat_id)
 );
 
 CREATE TABLE locations (
-    loc_id INT,
+    loc_id INT AUTO_INCREMENT,
     loc_name VARCHAR(20),
     loc_address VARCHAR(40),
-    PRIMARY KEY (loc_id )
+    PRIMARY KEY (loc_id)
 );
 
 CREATE TABLE assets (
-    a_id INT,
+    a_id INT AUTO_INCREMENT,
     a_status VARCHAR(20),
     a_condition VARCHAR(20),
     loc_id INT,
@@ -58,7 +59,7 @@ CREATE TABLE assets (
 );
 
 CREATE TABLE loans (
-    l_id INT,
+    l_id INT AUTO_INCREMENT,
     u_id INT,
     l_status VARCHAR(20),
     l_checked_out_at TIMESTAMP,

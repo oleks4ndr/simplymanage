@@ -1,0 +1,93 @@
+<div class="catalog-container">
+	<aside class="catalog-sidebar">
+		<div class="filters">
+			<h3 class="filters-title">Filters</h3>
+			<form action="/items" method="GET" id="filterForm">
+				<input type="hidden" name="search" value="{{search}}" />
+				<input type="hidden" name="category" value="{{selectedCategory}}" id="categoryInput" />
+				
+				<div class="filter-group">
+					<label class="filter-checkbox">
+						<input
+							type="checkbox"
+							name="showOnlyAvailable"
+							value="true"
+							{{#if showOnlyAvailable}}checked{{/if}}
+							onchange="document.getElementById('filterForm').submit()"
+						/>
+						<span>Show Only Available</span>
+					</label>
+				</div>
+			</form>
+		</div>
+
+		<div class="categories">
+			<h3 class="categories-title">
+				<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+					<path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+				</svg>
+				Categories
+			</h3>
+			<ul class="category-tree">
+				<li>
+					<a
+						href="#"
+						class="category-link {{#unless selectedCategory}}active{{/unless}}"
+						onclick="selectCategory(event, '')"
+					>
+						<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+							<path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+						</svg>
+						All Items
+					</a>
+				</li>
+				{{#each categories}}
+					{{> categoryTreeItem}}
+				{{/each}}
+			</ul>
+		</div>
+	</aside>
+
+	<main class="catalog-main">
+		<div class="catalog-header">
+			<h1 class="catalog-title">Catalog</h1>
+			<form action="/items" method="GET" class="search-form">
+				<input type="hidden" name="category" value="{{selectedCategory}}" />
+				<input type="hidden" name="showOnlyAvailable" value="{{showOnlyAvailable}}" />
+				<input
+					type="text"
+					name="search"
+					placeholder="Search"
+					value="{{search}}"
+					class="search-input"
+				/>
+				<button type="submit" class="search-button">
+					<svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+					</svg>
+				</button>
+			</form>
+		</div>
+
+		{{#if items.length}}
+			<div class="items-grid">
+				{{#each items}}
+					{{> itemCard}}
+				{{/each}}
+			</div>
+		{{else}}
+			<div class="empty-state">
+				<p>No items found matching your criteria.</p>
+				<a href="/items" class="btn btn-primary">Clear Filters</a>
+			</div>
+		{{/if}}
+	</main>
+</div>
+
+<script>
+	function selectCategory(event, categoryId) {
+		event.preventDefault();
+		document.getElementById('categoryInput').value = categoryId;
+		document.getElementById('filterForm').submit();
+	}
+</script>

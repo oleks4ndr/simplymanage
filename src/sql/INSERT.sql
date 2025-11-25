@@ -34,19 +34,19 @@ INSERT INTO categories_children (cat_id, cat_child_id) VALUES
 (6, 7);   -- Lighting -> Batteries
 
 /* ITEMS (12) */
-INSERT INTO items (it_id, it_name, it_sku, it_description, it_max_time_out, it_active, it_renewable, cat_id) VALUES
-(1,  'Canon EOS R6',            'CAM-R6-001', 'Full-frame mirrorless camera',                 72, 1, 1, 1),
-(2,  'Sony A7 III',             'CAM-A7-002', 'Full-frame mirrorless camera',                 72, 1, 1, 1),
-(3,  'Nikon Z6 II',             'CAM-Z6-003', 'Full-frame mirrorless camera',                 72, 1, 1, 1),
-(4,  '24-70mm f/2.8 Lens',      'LEN-2470-01','Versatile standard zoom lens',                 48, 1, 1, 2),
-(5,  '50mm f/1.8 Lens',         'LEN-50-002', 'Prime lens for portraits',                     48, 1, 1, 2),
-(6,  'Manfrotto Tripod',        'TRI-MAN-01', 'Sturdy aluminum tripod',                       48, 1, 1, 3),
-(7,  'RØDE VideoMic Pro+',      'MIC-RVP-01', 'On-camera shotgun microphone',                 48, 1, 1, 5),
-(8,  'Zoom H6 Recorder',        'AUD-H6-001', 'Portable audio recorder (4 XLR)',              48, 1, 1, 4),
-(9,  'Aputure LED Light',       'LGT-APT-01', 'Bi-color LED panel light',                     48, 1, 1, 6),
-(10, 'NP-F970 Battery',         'BAT-NPF-01', 'High-capacity battery pack',                   24, 1, 1, 7),
-(11, 'HDMI 2.1 Cable 3m',       'CBL-HDMI-3', 'High-speed HDMI cable 3 meters',               24, 1, 1, 8),
-(12, 'DJI Mini 3 Pro',          'DRN-MIN3-1', 'Lightweight drone with 4K video',              24, 1, 0, 9);
+INSERT INTO items (it_id, it_name, it_sku, it_description, it_image_url, it_max_time_out, it_active, it_renewable, cat_id) VALUES
+(1,  'Canon EOS R6',            'CAM-R6-001', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
+(2,  'Sony A7 III',             'CAM-A7-002', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
+(3,  'Nikon Z6 II',             'CAM-Z6-003', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
+(4,  '24-70mm f/2.8 Lens',      'LEN-2470-01','Versatile standard zoom lens',                 'http://placehold.co/500', 48, 1, 1, 2),
+(5,  '50mm f/1.8 Lens',         'LEN-50-002', 'Prime lens for portraits',                     'http://placehold.co/500', 48, 1, 1, 2),
+(6,  'Manfrotto Tripod',        'TRI-MAN-01', 'Sturdy aluminum tripod',                       'http://placehold.co/500', 48, 1, 1, 3),
+(7,  'RØDE VideoMic Pro+',      'MIC-RVP-01', 'On-camera shotgun microphone',                 'http://placehold.co/500', 48, 1, 1, 5),
+(8,  'Zoom H6 Recorder',        'AUD-H6-001', 'Portable audio recorder (4 XLR)',              'http://placehold.co/500', 48, 1, 1, 4),
+(9,  'Aputure LED Light',       'LGT-APT-01', 'Bi-color LED panel light',                     'http://placehold.co/500', 48, 1, 1, 6),
+(10, 'NP-F970 Battery',         'BAT-NPF-01', 'High-capacity battery pack',                   'http://placehold.co/500', 24, 1, 1, 7),
+(11, 'HDMI 2.1 Cable 3m',       'CBL-HDMI-3', 'High-speed HDMI cable 3 meters',               'http://placehold.co/500', 24, 1, 1, 8),
+(12, 'DJI Mini 3 Pro',          'DRN-MIN3-1', 'Lightweight drone with 4K video',              'http://placehold.co/500', 24, 1, 0, 9);
 
 /* LOCATIONS (10) */
 INSERT INTO locations (loc_id, loc_name, loc_address) VALUES

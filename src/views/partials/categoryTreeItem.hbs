@@ -1,0 +1,20 @@
+{{!-- Recursive Category Tree Item --}}
+<li class="category-item">
+	<a
+		href="#"
+		class="category-link {{#if (eq ../selectedCategory (toString cat_id))}}active{{/if}}"
+		onclick="selectCategory(event, '{{cat_id}}')"
+	>
+		<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+			<path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+		</svg>
+		{{cat_name}}
+	</a>
+	{{#if children.length}}
+		<ul class="category-children">
+			{{#each children}}
+				{{> categoryTreeItem}}
+			{{/each}}
+		</ul>
+	{{/if}}
+</li>

@@ -8,6 +8,11 @@ import url from 'url';
 import mysqlSession from 'express-mysql-session';
 import { pool, query } from './db.js';
 import authRoutes from './routes/auth.js';
+import itemsRoutes from './routes/items.js';
+import cartRoutes from './routes/cart.js';
+import loansRoutes from './routes/loans.js';
+import dashboardRoutes from './routes/dashboard.js';
+import adminRoutes from './routes/admin.js';
 import hbs from 'hbs';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -21,6 +26,23 @@ app.set('views', path.join(__dirname, 'views'));
 
 // register partials directory so {{> navbar}} works
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// Register Handlebars helpers
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+hbs.registerHelper('or', function() {
+  return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+});
+
+hbs.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
+hbs.registerHelper('toString', function(value) {
+  return String(value);
+});
 
 // ------ Middleware and Sessions ----------
 app.use(express.static(path.join(__dirname, 'public')));
@@ -42,24 +64,12 @@ app.use(session({
   }
 }));
 
-app.use(async (req, res, next) => {
-  res.locals.user = null;
-  res.locals.isAdmin = false;
-  res.locals.isAuthenticated = false;
-
-  try {
-    if (req.session && req.session.userId) {
-      // Fetch fresh user from DB
-      const rows = await query('SELECT id, name, role FROM users WHERE id = ?', [req.session.userId]);
-      if (rows[0]) {
-        res.locals.user = rows[0];
-        res.locals.isAuthenticated = true;
-        res.locals.isAdmin = rows[0].role === 'admin';
-      }
-    }
-  } catch (err) {
-    return next(err);
-  }
+// Make user available to all views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  res.locals.isAuthenticated = !!req.session.user;
+  res.locals.isAdmin = req.session.user && (req.session.user.u_role === 'admin');
+  res.locals.isStaff = req.session.user && (req.session.user.u_role === 'staff' || req.session.user.u_role === 'admin');
   next();
 });
 
@@ -76,9 +86,44 @@ async function testDatabaseConnection() {
   }
 }
 
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  next();
+}
+
 function requireAdmin(req, res, next) {
-  if (res.locals.isAdmin) return next();
-  res.status(403).send('Forbidden');
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  if (req.session.user.u_role !== 'admin') {
+    return res.status(403).send('Forbidden: Admin access required');
+  }
+  next();
+}
+
+function requireStaff(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  if (req.session.user.u_role !== 'staff' && req.session.user.u_role !== 'admin') {
+    return res.status(403).send('Forbidden: Staff access required');
+  }
+  next();
+}
+
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res.redirect('/auth/login');
+    }
+    if (!roles.includes(req.session.user.u_role)) {
+      return res.status(403).send('Forbidden: Insufficient permissions');
+    }
+    next();
+  };
 }
 
 // ------ Test SQL DB ----------
@@ -100,6 +145,27 @@ app.get('/', (req, res) => {
 
 // Mount auth routes
 app.use('/auth', authRoutes);
+
+// Mount items routes (public)
+app.use('/items', requireAuth, itemsRoutes);
+
+// Mount cart routes (requires authentication)
+app.use('/cart', requireAuth, cartRoutes);
+
+// Mount loans routes (requires authentication)
+app.use('/loans', requireAuth, loansRoutes);
+
+// Mount dashboard routes (requires staff/admin)
+app.use('/dashboard', requireStaff, dashboardRoutes);
+
+// Mount admin routes (requires admin)
+app.use('/admin', requireAdmin, adminRoutes);
+
+// Contact page (public)
+app.get('/contact', (req, res) => {
+  // TODO: Contact form or information
+  res.send('Contact page - Coming soon');
+});
 
 // ------ Start Server ----------
 async function startServer() {
