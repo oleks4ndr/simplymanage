@@ -600,6 +600,42 @@ button.btn {
 	margin-bottom: 2px;
 }
 
+.category-row {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.category-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	cursor: pointer;
+	border-radius: 4px;
+	transition: all var(--transition-fast);
+	flex-shrink: 0;
+}
+
+.category-toggle:hover {
+	background: rgba(0, 0, 0, 0.05);
+	color: var(--dark);
+}
+
+.category-toggle .chevron {
+	transition: transform var(--transition-base);
+}
+
+.category-spacer {
+	width: 20px;
+	flex-shrink: 0;
+}
+
 .category-link {
 	display: flex;
 	align-items: center;
@@ -611,6 +647,7 @@ button.btn {
 	font-size: 14px;
 	font-weight: 500;
 	transition: all var(--transition-fast);
+	flex: 1;
 }
 
 .category-link svg {

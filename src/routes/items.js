@@ -38,8 +38,16 @@ router.get('/', async (req, res) => {
     }
     
     if (category) {
-      sql += ` AND i.cat_id = ?`;
-      params.push(category);
+      // Get all categories (for finding children)
+      const allCategories = await query(`SELECT cat_id, cat_parent_id FROM categories`);
+      
+      // Get all descendant category IDs
+      const categoryIds = getAllDescendantIds(parseInt(category), allCategories);
+      categoryIds.push(parseInt(category)); // Include parent itself
+      
+      const placeholders = categoryIds.map(() => '?').join(',');
+      sql += ` AND i.cat_id IN (${placeholders})`;
+      params.push(...categoryIds);
     }
     
     sql += ` GROUP BY i.it_id, i.it_name, i.it_sku, i.it_description, i.it_image_url, i.it_max_time_out, i.it_active, i.it_renewable, i.cat_id, c.cat_name`;
@@ -107,6 +115,23 @@ router.get('/:id', async (req, res) => {
     res.status(500).send('Error loading item');
   }
 });
+
+// Helper function to get all descendant category IDs
+function getAllDescendantIds(categoryId, allCategories) {
+  const descendants = [];
+  
+  function findChildren(parentId) {
+    allCategories.forEach(cat => {
+      if (cat.cat_parent_id === parentId) {
+        descendants.push(cat.cat_id);
+        findChildren(cat.cat_id); // Recursively find children
+      }
+    });
+  }
+  
+  findChildren(categoryId);
+  return descendants;
+}
 
 // Helper function to build category tree
 function buildCategoryTree(categories) {

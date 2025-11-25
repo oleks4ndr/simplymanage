@@ -1,17 +1,39 @@
 {{!-- Recursive Category Tree Item --}}
 <li class="category-item">
-	<a
-		href="#"
-		class="category-link {{#if (eq ../selectedCategory (toString cat_id))}}active{{/if}}"
-		onclick="selectCategory(event, '{{cat_id}}')"
-	>
-		<svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
-			<path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
-		</svg>
-		{{cat_name}}
-	</a>
+	<div class="category-row">
+		{{#if children.length}}
+			<button
+				class="category-toggle"
+				onclick="toggleCategory(event, 'cat-{{cat_id}}')"
+				aria-label="Toggle category"
+			>
+				<svg
+					class="chevron"
+					width="12"
+					height="12"
+					viewBox="0 0 20 20"
+					fill="currentColor"
+				>
+					<path
+						fill-rule="evenodd"
+						d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+						clip-rule="evenodd"
+					/>
+				</svg>
+			</button>
+		{{else}}
+			<span class="category-spacer"></span>
+		{{/if}}
+		<a
+			href="#"
+			class="category-link {{#if (eq ../selectedCategory (toString cat_id))}}active{{/if}}"
+			onclick="selectCategory(event, '{{cat_id}}')"
+		>
+			{{cat_name}}
+		</a>
+	</div>
 	{{#if children.length}}
-		<ul class="category-children">
+		<ul class="category-children" id="cat-{{cat_id}}" style="display: none;">
 			{{#each children}}
 				{{> categoryTreeItem}}
 			{{/each}}

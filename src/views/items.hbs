@@ -90,4 +90,19 @@
 		document.getElementById('categoryInput').value = categoryId;
 		document.getElementById('filterForm').submit();
 	}
+
+	function toggleCategory(event, categoryId) {
+		event.stopPropagation();
+		const childrenList = document.getElementById(categoryId);
+		const button = event.currentTarget;
+		const chevron = button.querySelector('.chevron');
+		
+		if (childrenList.style.display === 'none') {
+			childrenList.style.display = 'block';
+			chevron.style.transform = 'rotate(90deg)';
+		} else {
+			childrenList.style.display = 'none';
+			chevron.style.transform = 'rotate(0deg)';
+		}
+	}
 </script>
