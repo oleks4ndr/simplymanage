@@ -126,6 +126,11 @@ function requireRole(...roles) {
   };
 }
 
+app.use((req, res, next) => {
+  console.log(req.session.user);
+  next();
+})
+
 // ------ Test SQL DB ----------
 app.get('/test-db', async (req, res) => {
   try {

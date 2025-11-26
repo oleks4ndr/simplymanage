@@ -106,7 +106,8 @@ router.get('/:id', async (req, res) => {
       return res.status(404).send('Item not found');
     }
     
-    res.render('item-detail', {
+    console.log(items[0]);
+    res.render('itemDetail', {
       title: items[0].it_name,
       item: items[0]
     });

@@ -77,3 +77,9 @@ CREATE TABLE loan_details (
     FOREIGN KEY (l_id) REFERENCES loans(l_id),
     FOREIGN KEY (a_id) REFERENCES assets(a_id)
 );
+
+CREATE TABLE user_reviews (
+    -- we need the user name or user id
+    -- need their message 
+    -- timestamp when message was sent
+);
