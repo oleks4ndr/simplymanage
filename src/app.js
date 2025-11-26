@@ -1,3 +1,4 @@
+//libraries
 import './config.js';
 import './db.js';
 
@@ -13,6 +14,7 @@ import cartRoutes from './routes/cart.js';
 import loansRoutes from './routes/loans.js';
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
+import profileRoutes from './routes/profile.js';
 import hbs from 'hbs';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -159,6 +161,9 @@ app.use('/cart', requireAuth, cartRoutes);
 
 // Mount loans routes (requires authentication)
 app.use('/loans', requireAuth, loansRoutes);
+
+// Mount profile routes (requires authentication)
+app.use('/profile', requireAuth, profileRoutes);
 
 // Mount dashboard routes (requires staff/admin)
 app.use('/dashboard', requireStaff, dashboardRoutes);

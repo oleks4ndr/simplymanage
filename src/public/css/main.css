@@ -510,24 +510,35 @@ button.btn {
 }
 
 .user {
-	font-size: 14px;
-	font-weight: 500;
-	color: var(--dark);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px; /* match .btn size */
+    border-radius: 8px;
+    border: 1px solid transparent; /* prevent layout shift on hover */
+    transition: all var(--transition-base);
 }
 
+/* Make it look like a ghost button on hover, similar to .btn-ghost */
+.auth .user:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.18);
+}
 /* =========================
    CATALOG PAGE
    ========================= */
 .catalog-container {
-	display: grid;
-	grid-template-columns: 260px 1fr;
-	gap: var(--space-3xl);
-	max-width: 1400px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: var(--space-3xl);
+    max-width: 1400px;
 	margin: 0 auto;
 	padding: var(--space-2xl) var(--space-lg);
 	width: 100%;
 }
-
 /* Sidebar */
 .catalog-sidebar {
 	display: flex;
