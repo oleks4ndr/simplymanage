@@ -1,1 +1,61 @@
-<h1>{{item.it_description}} </h1>
+<div class="item-detail-container">
+	<div class="item-detail-image">
+		{{#if item.it_image_url}}
+			<img src="{{item.it_image_url}}" alt="{{item.it_name}}" />
+		{{else}}
+			<div class="placeholder-image" style="font-size: 24px;">
+				{{item.it_name}}
+			</div>
+		{{/if}}
+	</div>
+	
+	<div class="item-detail-content">
+		<div class="item-detail-header">
+			<h1>{{item.it_name}}</h1>
+			<div class="item-detail-meta">
+				<span class="badge {{#if item.available_count}}badge-success{{else}}badge-unavailable{{/if}}">
+					{{#if item.available_count}}Available{{else}}Out of Stock{{/if}}
+				</span>
+				<span class="badge badge-primary">{{item.cat_name}}</span>
+			</div>
+		</div>
+
+		<div class="item-detail-description">
+			{{item.it_description}}
+		</div>
+
+		<div class="card" style="padding: var(--space-lg); margin-bottom: var(--space-xl);">
+			<div class="profile-row">
+				<span class="label">SKU</span>
+				<span>{{item.it_sku}}</span>
+			</div>
+			<div class="profile-row">
+				<span class="label">Max Loan Duration</span>
+				<span>{{item.it_max_time_out}} days</span>
+			</div>
+			<div class="profile-row">
+				<span class="label">Renewable</span>
+				<span>{{#if item.it_renewable}}Yes{{else}}No{{/if}}</span>
+			</div>
+			<div class="profile-row">
+				<span class="label">Stock Availability</span>
+				<span>{{item.available_count}} / {{item.total_count}}</span>
+			</div>
+		</div>
+
+		<div class="item-detail-actions">
+			<form action="/cart/add" method="POST" style="flex: 1;">
+				<input type="hidden" name="itemId" value="{{item.it_id}}" />
+				<button 
+					type="submit" 
+					class="btn btn-primary btn-l" 
+					style="width: 100%;" 
+					{{#unless item.available_count}}disabled{{/unless}}
+				>
+					{{#if item.available_count}}Add to Cart{{else}}Unavailable{{/if}}
+				</button>
+			</form>
+			<a href="/items" class="btn btn-ghost btn-l">Back to Catalog</a>
+		</div>
+	</div>
+</div>
