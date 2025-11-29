@@ -1,27 +1,31 @@
 <div class="form-container">
 	<h1 class="form-title">Register</h1>
+	{{#if error}}
+		<div class="alert alert-error">{{error}}</div>
+	{{/if}}
 	<form action="/auth/register" method="POST" class="form">
 		<div class="form-group">
-			<label for="username">User Name</label>
-			<input type="text" id="username" name="username" required />
+			<label for="fname">First Name</label>
+			<input type="text" id="fname" name="fname" value="{{fname}}" required />
+		</div>
+		<div class="form-group">
+			<label for="lname">Last Name</label>
+			<input type="text" id="lname" name="lname" value="{{lname}}" required />
 		</div>
 		<div class="form-group">
 			<label for="email">Email</label>
-			<input type="email" id="email" name="email" required />
+			<input type="email" id="email" name="email" value="{{email}}" required />
 		</div>
 		<div class="form-group">
 			<label for="password">Password</label>
 			<input type="password" id="password" name="password" required />
 		</div>
 		<div class="form-group">
-			<label for="confirm-password">Confirm Password</label>
-			<input
-				type="password"
-				id="confirm-password"
-				name="confirm-password"
-				required
-			/>
+			<label for="confirmPassword">Confirm Password</label>
+			<input type="password" id="confirmPassword" name="confirmPassword" required />
 		</div>
 		<button type="submit" class="btn btn-dark">Register</button>
 	</form>
+	<p class="form-footer">Already have an account?
+		<a href="/auth/login">Login here</a></p>
 </div>

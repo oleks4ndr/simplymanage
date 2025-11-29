@@ -1,0 +1,81 @@
+<div class="loans-page container">
+  <h1>My Loans</h1>
+
+  <section class="loans-section">
+    <h2>Pending</h2>
+    {{#if pendingLoans.length}}
+      <ul class="loan-list">
+        {{#each pendingLoans}}
+          <li class="loan-card">
+            <div class="loan-header">
+              <div class="loan-title">Loan #{{l_id}}</div>
+              <span class="badge badge-warning">{{displayStatus}}</span>
+            </div>
+            <div class="loan-meta">
+              <div>Checked Out: Pending</div>
+              {{#if l_due_at}}
+                <div>Due: {{l_due_at}}</div>
+              {{/if}}
+            </div>
+            {{#if items.length}}
+              <ul class="loan-items">
+                {{#each items}}
+                  <li class="loan-item">
+                    {{#if it_image_url}}
+                      <img src="{{it_image_url}}" alt="{{it_name}}" class="loan-item-img" />
+                    {{/if}}
+                    <span class="loan-item-name">{{it_name}}</span>
+                    <span class="loan-item-id">(Asset #{{a_id}})</span>
+                  </li>
+                {{/each}}
+              </ul>
+            {{else}}
+              <div class="empty-state">No items in this loan yet.</div>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <div class="empty-state">You have no pending loans.</div>
+    {{/if}}
+  </section>
+
+  <section class="loans-section">
+    <h2>Checked Out</h2>
+    {{#if currentLoans.length}}
+      <ul class="loan-list">
+        {{#each currentLoans}}
+          <li class="loan-card">
+            <div class="loan-header">
+              <div class="loan-title">Loan #{{l_id}}</div>
+              <span class="badge badge-primary">{{displayStatus}}</span>
+            </div>
+            <div class="loan-meta">
+              <div>Checked Out: {{l_checked_out_at}}</div>
+              {{#if l_due_at}}
+                <div>Due: {{l_due_at}}</div>
+              {{/if}}
+            </div>
+            {{#if items.length}}
+              <ul class="loan-items">
+                {{#each items}}
+                  <li class="loan-item">
+                    {{#if it_image_url}}
+                      <img src="{{it_image_url}}" alt="{{it_name}}" class="loan-item-img" />
+                    {{/if}}
+                    <span class="loan-item-name">{{it_name}}</span>
+                    <span class="loan-item-id">(Asset #{{a_id}})</span>
+                  </li>
+                {{/each}}
+              </ul>
+            {{else}}
+              <div class="empty-state">No items found for this loan.</div>
+            {{/if}}
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <div class="empty-state">You have no items currently checked out.</div>
+    {{/if}}
+  </section>
+</div>

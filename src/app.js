@@ -1,3 +1,4 @@
+//libraries
 import './config.js';
 import './db.js';
 
@@ -14,21 +15,41 @@ import loansRoutes from './routes/loans.js';
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
 import contactRoutes from './routes/contact.js';
+import profileRoutes from './routes/profile.js';
 import hbs from 'hbs';
 
-
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-
 const app = express();
+const PORT = process.env.PORT ?? 3000;
 
 app.set('view engine', 'hbs');
 
 // ensure Express uses the views directory inside src
 app.set('views', path.join(__dirname, 'views'));
 
-import hbs from 'hbs';
 // register partials directory so {{> navbar}} works
 hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+
+// Register Handlebars helpers
+hbs.registerHelper('eq', function(a, b) {
+  return a === b;
+});
+
+hbs.registerHelper('or', function() {
+  return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+});
+
+hbs.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
+hbs.registerHelper('not', function(value) {
+  return !value;
+});
+
+hbs.registerHelper('toString', function(value) {
+  return String(value);
+});
 
 // ------ Middleware and Sessions ----------
 app.use(express.static(path.join(__dirname, 'public')));
@@ -50,32 +71,84 @@ app.use(session({
   }
 }));
 
-app.use(async (req, res, next) => {
-  res.locals.user = null;
-  res.locals.isAdmin = false;
-  res.locals.isAuthenticated = false;
-
-  try {
-    if (req.session && req.session.userId) {
-      // Fetch fresh user from DB
-      const rows = await query('SELECT id, name, role FROM users WHERE id = ?', [req.session.userId]);
-      if (rows[0]) {
-        res.locals.user = rows[0];
-        res.locals.isAuthenticated = true;
-        res.locals.isAdmin = rows[0].role === 'admin';
-      }
-    }
-  } catch (err) {
-    return next(err);
-  }
+// Make user available to all views
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  res.locals.isAuthenticated = !!req.session.user;
+  res.locals.isAdmin = req.session.user && (req.session.user.u_role === 'admin');
+  res.locals.isStaff = req.session.user && (req.session.user.u_role === 'staff' || req.session.user.u_role === 'admin');
   next();
 });
 
 // ------ Helper Functions ----------
-function requireAdmin(req, res, next) {
-  if (res.locals.isAdmin) return next();
-  res.status(403).send('Forbidden');
+
+async function testDatabaseConnection() {
+  try {
+    const connection = await pool.getConnection();
+    console.log('Database connected successfully.');
+    connection.release();
+  } catch (err) {
+    console.error('Database connection failed:', err.code);
+    process.exit(1); // Stop the server
+  }
 }
+
+// Authentication middleware
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  next();
+}
+
+function requireAdmin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  if (req.session.user.u_role !== 'admin') {
+    return res.status(403).send('Forbidden: Admin access required');
+  }
+  next();
+}
+
+function requireStaff(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/auth/login');
+  }
+  if (req.session.user.u_role !== 'staff' && req.session.user.u_role !== 'admin') {
+    return res.status(403).send('Forbidden: Staff access required');
+  }
+  next();
+}
+
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.session.user) {
+      return res.redirect('/auth/login');
+    }
+    if (!roles.includes(req.session.user.u_role)) {
+      return res.status(403).send('Forbidden: Insufficient permissions');
+    }
+    next();
+  };
+}
+
+app.use((req, res, next) => {
+  console.log(req.session.user);
+  next();
+})
+
+// ------ Test SQL DB ----------
+app.get('/test-db', async (req, res) => {
+  try {
+    const users = await query("SELECT * FROM users");
+    res.json(users);
+  } catch (err) {
+    console.error("DB Error:", err);
+    res.status(500).json({ error: "Database test failed" });
+  }
+});
+
 
 // ------ Main Routes ----------
 app.get('/', (req, res) => {
@@ -85,10 +158,6 @@ app.get('/', (req, res) => {
 // Mount auth routes
 app.use('/auth', authRoutes);
 
-
-// ------ Start Server ----------
-app.listen(process.env.PORT ?? 3000);
-
 // Mount items routes (public)
 app.use('/items', requireAuth, itemsRoutes);
 
@@ -97,6 +166,9 @@ app.use('/cart', requireAuth, cartRoutes);
 
 // Mount loans routes (requires authentication)
 app.use('/loans', requireAuth, loansRoutes);
+
+// Mount profile routes (requires authentication)
+app.use('/profile', requireAuth, profileRoutes);
 
 // Mount dashboard routes (requires staff/admin)
 app.use('/dashboard', requireStaff, dashboardRoutes);
@@ -115,5 +187,5 @@ async function startServer() {
     console.log(`App running at http://localhost:${PORT}/`);
   });
 }
-startServer();
 
+startServer();

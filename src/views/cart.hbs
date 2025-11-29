@@ -1,0 +1,87 @@
+<div class="container cart-page">
+	<h1>Your Cart</h1>
+
+	{{#if cartItems.length}}
+		<div class="cart-grid">
+			<div class="cart-items">
+				{{#each cartItems}}
+					<div class="cart-item card">
+						<div class="cart-item-image">
+							{{#if it_image_url}}
+								<img src="{{it_image_url}}" alt="{{it_name}}" />
+							{{else}}
+								<div class="placeholder-image" style="font-size: 12px;">No
+									Image</div>
+							{{/if}}
+						</div>
+						<div class="cart-item-details">
+							<h3>{{it_name}}</h3>
+							<p class="text-muted">{{it_description}}</p>
+							<div style="margin-top: 8px; font-size: 14px;">
+								Quantity:
+								{{quantity}}
+							</div>
+						</div>
+						<div class="cart-item-actions">
+							<form action="/cart/remove" method="POST">
+								<input type="hidden" name="itemId" value="{{it_id}}" />
+								<button
+									type="submit"
+									class="btn btn-ghost btn-sm"
+								>Remove</button>
+							</form>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+
+			<div class="cart-summary card">
+				<h2>Summary</h2>
+				<div class="profile-row">
+					<span class="label">Total Items:</span>
+					<span>{{cartItems.length}}</span>
+				</div>
+
+				<form
+					action="/cart/checkout"
+					method="POST"
+					style="margin-top: var(--space-lg);"
+				>
+					<div class="form-group" style="margin-bottom: var(--space-lg);">
+						<label
+							for="returnDate"
+							style="display: block; margin-bottom: 8px; font-weight: 600;"
+						>Return Date</label>
+						<input
+							type="date"
+							id="returnDate"
+							name="returnDate"
+							min="{{todayStr}}"
+							max="{{maxDateStr}}"
+							required
+							style="width: 100%; padding: 8px; border: 1px solid var(--slate-200); border-radius: 6px;"
+						/>
+						<small
+							style="display: block; margin-top: 4px; color: var(--muted); font-size: 12px;"
+						>
+							Max loan duration:
+							{{minMaxTimeout}}
+							days
+						</small>
+					</div>
+
+					<button
+						type="submit"
+						class="btn btn-primary btn-l"
+						style="width: 100%;"
+					>Checkout</button>
+				</form>
+			</div>
+		</div>
+	{{else}}
+		<div class="empty-state">
+			<p>Your cart is empty.</p>
+			<a href="/items" class="btn btn-primary">Browse Catalog</a>
+		</div>
+	{{/if}}
+</div>

@@ -1,0 +1,86 @@
+<div class="container">
+	<div style="margin-bottom: var(--space-lg);">
+		<a href="/dashboard" class="btn btn-ghost btn-sm">&larr; Back to Dashboard</a>
+	</div>
+
+	<div class="card">
+		<div
+			style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-xl); border-bottom: 1px solid var(--slate-200); padding-bottom: var(--space-lg);"
+		>
+			<div>
+				<h1 style="margin-bottom: var(--space-xs);">Loan Request #{{loan.l_id}}</h1>
+				<div style="color: var(--muted);">Requested by
+					{{loan.u_fname}}
+					{{loan.u_lname}}
+					({{loan.u_email}})</div>
+			</div>
+			<div
+				class="badge badge-warning"
+				style="font-size: 14px;"
+			>{{loan.l_status}}</div>
+		</div>
+
+		<div style="margin-bottom: var(--space-xl);">
+			<h3>Requested Items</h3>
+			<p
+				style="color: var(--muted); font-size: 14px; margin-bottom: var(--space-md);"
+			>
+				Please assign specific assets to fulfill this request.
+			</p>
+
+			<form
+				action="/dashboard/loans/{{loan.l_id}}/approve"
+				method="POST"
+				id="approveForm"
+			>
+				<table
+					style="width: 100%; border-collapse: collapse; margin-bottom: var(--space-xl);"
+				>
+					<thead>
+						<tr
+							style="border-bottom: 2px solid var(--slate-200); text-align: left;"
+						>
+							<th style="padding: var(--space-md);">Item</th>
+							<th style="padding: var(--space-md);">SKU</th>
+							<th style="padding: var(--space-md);">Assigned Asset</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each items}}
+							<tr style="border-bottom: 1px solid var(--slate-100);">
+								<td style="padding: var(--space-md);">
+									<div style="font-weight: 600;">{{it_name}}</div>
+								</td>
+								<td style="padding: var(--space-md);">{{it_sku}}</td>
+								<td style="padding: var(--space-md);">
+									Asset #{{a_id}}
+									({{a_condition}})
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+
+				<div
+					style="display: flex; gap: var(--space-md); justify-content: flex-end; border-top: 1px solid var(--slate-200); padding-top: var(--space-lg);"
+				>
+					<button
+						type="button"
+						class="btn btn-ghost"
+						onclick="document.getElementById('rejectForm').submit()"
+					>Reject Request</button>
+					<button type="submit" class="btn btn-primary">Approve Loan</button>
+				</div>
+			</form>
+
+			<form
+				action="/dashboard/loans/{{loan.l_id}}/reject"
+				method="POST"
+				id="rejectForm"
+				style="display: none;"
+			>
+				<!-- Hidden form for rejection -->
+			</form>
+		</div>
+	</div>
+</div>
