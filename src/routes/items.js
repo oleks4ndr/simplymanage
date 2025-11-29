@@ -34,6 +34,13 @@ router.post('/add', checkStaff, async (req, res) => {
   try {
     const { name, sku, categoryId, description, imageUrl, maxTimeOut, renewable, active } = req.body;
     
+    // Set current user ID for audit trigger
+    await query(
+      'SET @current_user_id = ?',
+      [req.session.user.u_id],
+      'staff'
+    );
+    
     await query(
       `INSERT INTO items (it_name, it_sku, cat_id, it_description, it_image_url, it_max_time_out, it_renewable, it_active)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,

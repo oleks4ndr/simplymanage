@@ -1240,11 +1240,43 @@ button.btn {
 	}
 }
 
-
-
 /* =========================
    CONTACT PAGE SPECIFIC STYLES
    ========================= */
 textarea {
-  resize: none;
+	resize: none;
+}
+
+/* =========================
+   ADMIN PAGE STYLES
+   ========================= */
+.btn-danger {
+	background: #dc2626;
+	color: white;
+	border: 1px solid #dc2626;
+}
+
+.btn-danger:hover {
+	background: #b91c1c;
+	border-color: #b91c1c;
+	box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:disabled,
+.btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	transform: none !important;
+	box-shadow: none !important;
+}
+
+/* Admin table styling */
+table button.btn-sm {
+	white-space: nowrap;
+	min-width: 80px;
+}
+
+table select:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
 }

@@ -35,6 +35,7 @@ GRANT SELECT, UPDATE ON simplymanage.users TO 'simply_user'@'localhost';
 GRANT INSERT, SELECT ON simplymanage.loans TO 'simply_user'@'localhost';
 GRANT INSERT, SELECT ON simplymanage.loan_details TO 'simply_user'@'localhost';
 
+
 -- Note: We do not need to REVOKE privileges that were never granted.
 -- The user only has the specific privileges granted above.
 
@@ -75,5 +76,8 @@ GRANT INSERT, UPDATE ON simplymanage.assets TO 'simply_staff'@'localhost';
 -- Grant All Privileges
 GRANT ALL PRIVILEGES ON simplymanage.* TO 'simply_admin'@'localhost';
 
+-- Grant All Users access to write reviews
+GRANT INSERT, SELECT ON simplymanage.contact_tickets TO 'simply_user'@'localhost';
+GRANT INSERT, SELECT ON simplymanage.contact_tickets TO 'simply_staff'@'localhost';
 -- Apply changes
 FLUSH PRIVILEGES;

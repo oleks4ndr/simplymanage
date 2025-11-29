@@ -51,6 +51,22 @@ hbs.registerHelper('toString', function(value) {
   return String(value);
 });
 
+hbs.registerHelper('add', function(a, b) {
+  return a + b;
+});
+
+hbs.registerHelper('subtract', function(a, b) {
+  return a - b;
+});
+
+hbs.registerHelper('lt', function(a, b) {
+  return a < b;
+});
+
+hbs.registerHelper('json', function(context) {
+  return JSON.stringify(context, null, 2);
+});
+
 // ------ Middleware and Sessions ----------
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false}));

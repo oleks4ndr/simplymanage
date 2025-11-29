@@ -1,0 +1,80 @@
+<div class="container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--blue-500); text-decoration: none; margin-bottom: var(--space-sm); display: inline-block;">← Back to Dashboard</a>
+      <h1 style="margin: 0;">User Role Changes Audit History</h1>
+    </div>
+  </div>
+
+  {{#if flash}}
+    <div class="alert alert-{{flash.type}}">{{flash.message}}</div>
+  {{/if}}
+
+  <!-- Audit Table -->
+  <div class="card" style="overflow-x: auto;">
+    {{#if roleChanges.length}}
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--slate-200);">
+            <th style="padding: var(--space-md); text-align: left;">Date & Time</th>
+            <th style="padding: var(--space-md); text-align: left;">User</th>
+            <th style="padding: var(--space-md); text-align: left;">Role Change</th>
+            <th style="padding: var(--space-md); text-align: left;">Changed By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each roleChanges}}
+            <tr style="border-bottom: 1px solid var(--slate-100);">
+              <td style="padding: var(--space-md); font-size: 13px;">{{changed_at}}</td>
+              <td style="padding: var(--space-md);">
+                <div style="font-weight: 600;">
+                  {{#if u_fname}}
+                    {{u_fname}} {{u_lname}}
+                  {{else}}
+                    <span style="color: var(--slate-400);">User #{{uid}}</span>
+                  {{/if}}
+                </div>
+                {{#if u_email}}
+                  <div style="font-size: 11px; color: var(--slate-400);">{{u_email}}</div>
+                {{/if}}
+              </td>
+              <td style="padding: var(--space-md);">
+                <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                  <span class="badge badge-unavailable">{{old_role}}</span>
+                  <span style="color: var(--slate-400);">→</span>
+                  <span class="badge {{#if (eq new_role 'admin')}}badge-primary{{else}}{{#if (eq new_role 'staff')}}badge-warning{{else}}badge-unavailable{{/if}}{{/if}}">
+                    {{new_role}}
+                  </span>
+                </div>
+              </td>
+              <td style="padding: var(--space-md); font-size: 13px; color: var(--muted);">
+                {{changed_by}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      {{#if (gt pagination.totalPages 1)}}
+        <div style="display: flex; justify-content: center; align-items: center; gap: var(--space-md); margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--slate-200);">
+          {{#if (gt pagination.currentPage 1)}}
+            <a href="?page={{subtract pagination.currentPage 1}}" class="btn btn-sm btn-ghost">← Previous</a>
+          {{/if}}
+          
+          <span style="font-size: 14px; color: var(--muted);">
+            Page {{pagination.currentPage}} of {{pagination.totalPages}} ({{pagination.totalRecords}} records)
+          </span>
+          
+          {{#if (lt pagination.currentPage pagination.totalPages)}}
+            <a href="?page={{add pagination.currentPage 1}}" class="btn btn-sm btn-ghost">Next →</a>
+          {{/if}}
+        </div>
+      {{/if}}
+    {{else}}
+      <div style="text-align: center; padding: var(--space-4xl);">
+        <p style="font-size: 16px; color: var(--muted); margin-bottom: var(--space-xl);">No role change records found</p>
+      </div>
+    {{/if}}
+  </div>
+</div>

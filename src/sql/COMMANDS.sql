@@ -473,7 +473,7 @@ DELIMITER ;
 
 
 
--- ADVANCED FUNCTIONS
+-- MARK: ADVANCED FUNCTIONS
     -- audit history of who added items or categories (TRIGGER) (ALEKS)
 CREATE TABLE item_additions_history (
     addition_id INT AUTO_INCREMENT PRIMARY KEY,

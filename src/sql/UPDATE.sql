@@ -1,4 +1,4 @@
-USE inventory_management;
+USE simplymanage;
 DELIMITER //
 DROP PROCEDURE IF EXISTS sp_update_user_info //
 CREATE PROCEDURE sp_update_user_info(

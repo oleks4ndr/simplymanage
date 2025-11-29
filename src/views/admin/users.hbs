@@ -3,11 +3,8 @@
     <h1>User Management</h1>
   </div>
 
-  {{#if success}}
-    <div class="alert alert-success">{{success}}</div>
-  {{/if}}
-  {{#if error}}
-    <div class="alert alert-error">{{error}}</div>
+  {{#if flash}}
+    <div class="alert alert-{{flash.type}}">{{flash.message}}</div>
   {{/if}}
 
   <div class="card" style="overflow-x: auto;">
@@ -19,6 +16,7 @@
           <th style="padding: var(--space-md);">Email</th>
           <th style="padding: var(--space-md);">Current Role</th>
           <th style="padding: var(--space-md);">Status</th>
+          <th style="padding: var(--space-md);">Change Role</th>
           <th style="padding: var(--space-md);">Actions</th>
         </tr>
       </thead>
@@ -35,21 +33,51 @@
             </td>
             <td style="padding: var(--space-md);">
               {{#if u_active}}
-                <span style="color: green;">Active</span>
+                <span class="badge badge-success">Active</span>
               {{else}}
-                <span style="color: red;">Inactive</span>
+                <span class="badge badge-unavailable">Inactive</span>
               {{/if}}
             </td>
             <td style="padding: var(--space-md);">
               <form action="/admin/users/role" method="POST" style="display: flex; gap: var(--space-sm);">
                 <input type="hidden" name="userId" value="{{u_id}}" />
-                <select name="newRole" style="padding: 4px; border-radius: 4px; border: 1px solid var(--slate-200);">
+                <select name="newRole" style="padding: 4px; border-radius: 4px; border: 1px solid var(--slate-200);" {{#if (eq u_id ../currentUserId)}}disabled{{/if}}>
                   <option value="user" {{#if (eq u_role 'user')}}selected{{/if}}>User</option>
                   <option value="staff" {{#if (eq u_role 'staff')}}selected{{/if}}>Staff</option>
                   <option value="admin" {{#if (eq u_role 'admin')}}selected{{/if}}>Admin</option>
                 </select>
-                <button type="submit" class="btn btn-sm btn-ghost">Update</button>
+                <button type="submit" class="btn btn-sm btn-ghost" {{#if (eq u_id ../currentUserId)}}disabled{{/if}}>Update</button>
               </form>
+            </td>
+            <td style="padding: var(--space-md);">
+              <div style="display: flex; gap: var(--space-sm);">
+                <!-- Toggle Status Button -->
+                <form action="/admin/users/toggle-status" method="POST" style="display: inline;">
+                  <input type="hidden" name="userId" value="{{u_id}}" />
+                  <button 
+                    type="submit" 
+                    class="btn btn-sm {{#if u_active}}btn-ghost{{else}}btn-primary{{/if}}"
+                    {{#if (eq u_id ../currentUserId)}}disabled{{/if}}
+                    onclick="return confirm('Are you sure you want to {{#if u_active}}deactivate{{else}}activate{{/if}} this user?');"
+                  >
+                    {{#if u_active}}Deactivate{{else}}Activate{{/if}}
+                  </button>
+                </form>
+                
+                <!-- Delete Button -->
+                <form action="/admin/users/delete" method="POST" style="display: inline;">
+                  <input type="hidden" name="userId" value="{{u_id}}" />
+                  <button 
+                    type="submit" 
+                    class="btn btn-sm"
+                    style="background: #dc2626; color: white; border: 1px solid #dc2626;"
+                    {{#if (eq u_id ../currentUserId)}}disabled{{/if}}
+                    onclick="return confirm('Are you sure you want to DELETE this user? This action cannot be undone!');"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
             </td>
           </tr>
         {{/each}}

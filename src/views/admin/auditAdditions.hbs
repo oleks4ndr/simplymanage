@@ -1,0 +1,94 @@
+<div class="container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+    <div>
+      <a href="/admin" style="font-size: 13px; color: var(--blue-500); text-decoration: none; margin-bottom: var(--space-sm); display: inline-block;">← Back to Dashboard</a>
+      <h1 style="margin: 0;">Item Additions Audit History</h1>
+    </div>
+  </div>
+
+  {{#if flash}}
+    <div class="alert alert-{{flash.type}}">{{flash.message}}</div>
+  {{/if}}
+
+  <!-- Filters -->
+  <div class="card" style="margin-bottom: var(--space-xl);">
+    <form method="GET" action="/admin/audit/additions" style="display: flex; gap: var(--space-md); align-items: end;">
+      <div class="form-group" style="flex: 1;">
+        <label>Entity Type</label>
+        <select name="entityType" style="width: 100%; padding: var(--space-sm); border: 1px solid var(--slate-200); border-radius: 6px;">
+          <option value="">All Types</option>
+          <option value="ITEM" {{#if (eq filter.entityType 'ITEM')}}selected{{/if}}>Items</option>
+          <option value="CATEGORY" {{#if (eq filter.entityType 'CATEGORY')}}selected{{/if}}>Categories</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+      <a href="/admin/audit/additions" class="btn btn-ghost">Clear</a>
+    </form>
+  </div>
+
+  <!-- Audit Table -->
+  <div class="card" style="overflow-x: auto;">
+    {{#if additions.length}}
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--slate-200);">
+            <th style="padding: var(--space-md); text-align: left;">Date & Time</th>
+            <th style="padding: var(--space-md); text-align: left;">Type</th>
+            <th style="padding: var(--space-md); text-align: left;">Name</th>
+            <th style="padding: var(--space-md); text-align: left;">ID</th>
+            <th style="padding: var(--space-md); text-align: left;">Added By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each additions}}
+            <tr style="border-bottom: 1px solid var(--slate-100);">
+              <td style="padding: var(--space-md); font-size: 13px;">{{added_at}}</td>
+              <td style="padding: var(--space-md);">
+                <span class="badge {{#if (eq entity_type 'ITEM')}}badge-primary{{else}}badge-warning{{/if}}">
+                  {{entity_type}}
+                </span>
+              </td>
+              <td style="padding: var(--space-md); font-weight: 600;">
+                {{#if entity_name}}
+                  {{entity_name}}
+                {{else}}
+                  <span style="color: var(--slate-400);">(Deleted)</span>
+                {{/if}}
+              </td>
+              <td style="padding: var(--space-md); font-size: 13px; color: var(--muted);">#{{entity_id}}</td>
+              <td style="padding: var(--space-md); font-size: 13px;">
+                {{#if u_fname}}
+                  {{u_fname}} {{u_lname}}
+                  <div style="font-size: 11px; color: var(--slate-400);">{{u_email}}</div>
+                {{else}}
+                  <span style="color: var(--slate-400);">(Unknown)</span>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      {{#if (gt pagination.totalPages 1)}}
+        <div style="display: flex; justify-content: center; align-items: center; gap: var(--space-md); margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--slate-200);">
+          {{#if (gt pagination.currentPage 1)}}
+            <a href="?page={{subtract pagination.currentPage 1}}{{#if filter.entityType}}&entityType={{filter.entityType}}{{/if}}" class="btn btn-sm btn-ghost">← Previous</a>
+          {{/if}}
+          
+          <span style="font-size: 14px; color: var(--muted);">
+            Page {{pagination.currentPage}} of {{pagination.totalPages}} ({{pagination.totalRecords}} records)
+          </span>
+          
+          {{#if (lt pagination.currentPage pagination.totalPages)}}
+            <a href="?page={{add pagination.currentPage 1}}{{#if filter.entityType}}&entityType={{filter.entityType}}{{/if}}" class="btn btn-sm btn-ghost">Next →</a>
+          {{/if}}
+        </div>
+      {{/if}}
+    {{else}}
+      <div style="text-align: center; padding: var(--space-4xl);">
+        <p style="font-size: 16px; color: var(--muted); margin-bottom: var(--space-xl);">No audit records found</p>
+      </div>
+    {{/if}}
+  </div>
+</div>

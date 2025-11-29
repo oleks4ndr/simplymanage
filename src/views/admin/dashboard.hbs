@@ -1,0 +1,91 @@
+<div class="container">
+	<h1 style="margin-bottom: var(--space-xl);">Admin Dashboard</h1>
+
+	{{#if flash}}
+		<div class="alert alert-{{flash.type}}">{{flash.message}}</div>
+	{{/if}}
+
+	<!-- Statistics Cards -->
+	<div
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-xl); margin-bottom: var(--space-3xl);"
+	>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Total Users</h3>
+			<p
+				style="font-size: 48px; font-weight: 800; color: var(--blue-500); margin: 0;"
+			>{{stats.totalUsers}}</p>
+		</div>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Total Items</h3>
+			<p
+				style="font-size: 48px; font-weight: 800; color: #10b981; margin: 0;"
+			>{{stats.totalItems}}</p>
+		</div>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Total Assets</h3>
+			<p
+				style="font-size: 48px; font-weight: 800; color: #f59e0b; margin: 0;"
+			>{{stats.totalAssets}}</p>
+		</div>
+	</div>
+
+	<!-- Admin Sections -->
+	<div
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-xl);"
+	>
+		<a
+			href="/admin/users"
+			class="card"
+			style="text-decoration: none; transition: all var(--transition-base);"
+		>
+			<h3
+				style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: var(--space-sm);"
+			>👥 User Management</h3>
+			<p style="color: var(--muted); font-size: 14px; margin: 0;">Manage user roles,
+				status, and permissions</p>
+		</a>
+		<a
+			href="/admin/audit/additions"
+			class="card"
+			style="text-decoration: none; transition: all var(--transition-base);"
+		>
+			<h3
+				style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: var(--space-sm);"
+			>📦 Item Additions</h3>
+			<p style="color: var(--muted); font-size: 14px; margin: 0;">View audit trail
+				of items and categories added</p>
+		</a>
+		<a
+			href="/admin/audit/modifications"
+			class="card"
+			style="text-decoration: none; transition: all var(--transition-base);"
+		>
+			<h3
+				style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: var(--space-sm);"
+			>✏️ Item Modifications</h3>
+			<p style="color: var(--muted); font-size: 14px; margin: 0;">Track changes to
+				item details and updates</p>
+		</a>
+		<a
+			href="/admin/audit/roles"
+			class="card"
+			style="text-decoration: none; transition: all var(--transition-base);"
+		>
+			<h3
+				style="font-size: 18px; font-weight: 700; color: var(--dark); margin-bottom: var(--space-sm);"
+			>🔐 Role Changes</h3>
+			<p style="color: var(--muted); font-size: 14px; margin: 0;">View history of
+				user role modifications</p>
+		</a>
+	</div>
+</div>
+
+<style>
+	.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+</style>
