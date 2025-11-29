@@ -157,7 +157,8 @@ router.post('/register', async (req, res, next) => {
     // Insert new user with prefixed column names
     await query(
       'INSERT INTO users (u_id, u_fname, u_lname, u_email, u_password, u_role, u_active) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [nextId, fname, lname, email, hashedPassword, 'user', true]
+      [nextId, fname, lname, email, hashedPassword, 'user', true],
+      'admin' // Use admin role for user creation
     );
 
     // Auto-login: Store user info in session

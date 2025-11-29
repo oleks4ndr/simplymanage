@@ -35,6 +35,15 @@ router.get('/', async (req, res) => {
       [userId]
     );
 
+    // console.log('User ID:', userId);
+    // console.log('Pending Rows:', pendingRows.length);
+    // console.log('Current Rows:', currentRows.length);
+    // if (currentRows.length === 0) {
+    //     // Debug: Check if there are ANY loans for this user that are not pending
+    //     const debugRows = await query('SELECT * FROM loans WHERE u_id = ?', [userId]);
+    //     console.log('All User Loans:', debugRows);
+    // }
+
     function groupLoans(rows) {
       const map = new Map();
       for (const r of rows) {

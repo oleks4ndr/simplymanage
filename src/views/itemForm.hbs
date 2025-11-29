@@ -1,0 +1,64 @@
+<div class="container form-container">
+  <h1 class="form-title">{{#if item}}Edit Item{{else}}Add New Item{{/if}}</h1>
+
+  {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+  {{/if}}
+
+  <form action="{{#if item}}/items/{{item.it_id}}/edit{{else}}/items/add{{/if}}" method="POST" class="form">
+    <div class="form-group">
+      <label for="name">Item Name</label>
+      <input type="text" id="name" name="name" value="{{item.it_name}}" required />
+    </div>
+
+    <div class="form-group">
+      <label for="sku">SKU</label>
+      <input type="text" id="sku" name="sku" value="{{item.it_sku}}" required />
+    </div>
+
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select id="category" name="categoryId" required style="padding: var(--space-sm); border: 1px solid var(--slate-200); border-radius: 6px;">
+        <option value="">Select Category</option>
+        {{#each categories}}
+          <option value="{{cat_id}}" {{#if (eq ../item.cat_id cat_id)}}selected{{/if}}>{{cat_name}}</option>
+          {{#each children}}
+             <option value="{{cat_id}}" {{#if (eq ../../item.cat_id cat_id)}}selected{{/if}}>&nbsp;&nbsp;-- {{cat_name}}</option>
+          {{/each}}
+        {{/each}}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" rows="4" style="padding: var(--space-sm); border: 1px solid var(--slate-200); border-radius: 6px;">{{item.it_description}}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="imageUrl">Image URL</label>
+      <input type="url" id="imageUrl" name="imageUrl" value="{{item.it_image_url}}" />
+    </div>
+
+    <div class="form-group">
+      <label for="maxTimeOut">Max Loan Duration (Days)</label>
+      <input type="number" id="maxTimeOut" name="maxTimeOut" value="{{item.it_max_time_out}}" required min="1" />
+    </div>
+
+    <div class="form-group">
+      <label class="filter-checkbox">
+        <input type="checkbox" name="renewable" value="true" {{#if item.it_renewable}}checked{{/if}} />
+        <span>Renewable?</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label class="filter-checkbox">
+        <input type="checkbox" name="active" value="true" {{#if (or (not item) item.it_active)}}checked{{/if}} />
+        <span>Active?</span>
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{#if item}}Update Item{{else}}Create Item{{/if}}</button>
+    <a href="/items{{#if item}}/{{item.it_id}}{{/if}}" class="btn btn-ghost" style="text-align: center; margin-top: var(--space-sm);">Cancel</a>
+  </form>
+</div>

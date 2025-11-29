@@ -42,6 +42,10 @@ hbs.registerHelper('gt', function(a, b) {
   return a > b;
 });
 
+hbs.registerHelper('not', function(value) {
+  return !value;
+});
+
 hbs.registerHelper('toString', function(value) {
   return String(value);
 });

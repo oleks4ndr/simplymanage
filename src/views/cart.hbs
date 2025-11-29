@@ -41,11 +41,35 @@
 					<span class="label">Total Items:</span>
 					<span>{{cartItems.length}}</span>
 				</div>
+
 				<form
 					action="/cart/checkout"
 					method="POST"
 					style="margin-top: var(--space-lg);"
 				>
+					<div class="form-group" style="margin-bottom: var(--space-lg);">
+						<label
+							for="returnDate"
+							style="display: block; margin-bottom: 8px; font-weight: 600;"
+						>Return Date</label>
+						<input
+							type="date"
+							id="returnDate"
+							name="returnDate"
+							min="{{todayStr}}"
+							max="{{maxDateStr}}"
+							required
+							style="width: 100%; padding: 8px; border: 1px solid var(--slate-200); border-radius: 6px;"
+						/>
+						<small
+							style="display: block; margin-top: 4px; color: var(--muted); font-size: 12px;"
+						>
+							Max loan duration:
+							{{minMaxTimeout}}
+							days
+						</small>
+					</div>
+
 					<button
 						type="submit"
 						class="btn btn-primary btn-l"

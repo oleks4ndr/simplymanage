@@ -10,14 +10,18 @@
 				{{#if (or isAdmin isStaff)}}
 					<li><a href="/dashboard">Dashboard</a></li>
 				{{/if}}
+				{{#if isAdmin}}
+					<li><a href="/admin/users">Admin</a></li>
+				{{/if}}
 			{{/if}}
 			<li><a href="/contact">Contact</a></li>
-			<li><a href="#about">About</a></li>
+			<li><a href="/#about">About</a></li>
 		</ul>
 
 		<div class="auth">
 			{{#if isAuthenticated}}
-				<a class="user" href="/profile" title="View Profile">Hello, {{user.u_fname}}!</a>
+				<a class="user" href="/profile" title="View Profile">Hello,
+					{{user.u_fname}}!</a>
 				<form action="/auth/logout" method="post" style="display:inline">
 					<button type="submit" class="btn btn-ghost">Sign out</button>
 				</form>

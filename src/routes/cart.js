@@ -31,10 +31,29 @@ router.get('/', async (req, res) => {
         quantity: cart.find(c => c.itemId === item.it_id)?.quantity || 1
       }));
     }
+
+    // Calculate minimum max timeout
+    let minMaxTimeout = 0;
+    let maxDateStr = '';
+    
+    if (cartItems.length > 0) {
+      // Find the smallest it_max_time_out among all items
+      minMaxTimeout = Math.min(...cartItems.map(i => i.it_max_time_out));
+      
+      // Calculate the date: Today + minMaxTimeout days
+      const maxDate = new Date();
+      maxDate.setDate(maxDate.getDate() + minMaxTimeout);
+      
+      // Format as YYYY-MM-DD for HTML input
+      maxDateStr = maxDate.toISOString().split('T')[0];
+    }
     
     res.render('cart', {
       title: 'Cart',
-      cartItems
+      cartItems,
+      minMaxTimeout,
+      maxDateStr,
+      todayStr: new Date().toISOString().split('T')[0]
     });
   } catch (err) {
     console.error('Error loading cart:', err);
@@ -103,15 +122,72 @@ router.post('/remove', async (req, res) => {
 router.post('/checkout', async (req, res) => {
   try {
     const cart = req.session.cart || [];
+    const { returnDate } = req.body;
     
     if (cart.length === 0) {
       return res.redirect('/cart');
     }
+
+    if (!returnDate) {
+      return res.status(400).send('Return date is required');
+    }
     
-    // TODO: Create loan request with status 'pending'
-    // TODO: Clear cart after successful checkout
+    // 1. Create Loan Record (Pending)
+    // We use 'staff' pool here to allow reserving assets (updating asset status)
+    // This is a system action triggered by user checkout.
+    // l_checked_out_at is NULL until approved
+    const loanResult = await query(
+      `INSERT INTO loans (u_id, l_status, l_checked_out_at, l_due_at) VALUES (?, 'pending', NULL, ?)`,
+      [req.session.user.u_id, returnDate],
+      'staff' 
+    );
     
-    res.send('Checkout - Coming soon');
+    const loanId = loanResult.insertId;
+    
+    // 2. Process each item in cart
+    for (const cartItem of cart) {
+      const { itemId, quantity } = cartItem;
+      
+      // Find 'quantity' number of available assets for this item
+      // Note: Interpolating LIMIT because prepared statements for LIMIT can be flaky in some drivers
+      const limit = parseInt(quantity);
+      const assets = await query(
+        `SELECT a_id FROM assets WHERE it_id = ? AND a_status = 'available' LIMIT ${limit}`,
+        [itemId],
+        'staff'
+      );
+      
+      if (assets.length < quantity) {
+        // Rollback logic would go here in a real transaction
+        // For now, we just fail or take what we can get
+        console.warn(`Not enough assets for item ${itemId}. Requested: ${quantity}, Found: ${assets.length}`);
+      }
+      
+      // 3. Reserve Assets and Link to Loan
+      for (const asset of assets) {
+        // Link to loan
+        await query(
+          `INSERT INTO loan_details (l_id, a_id) VALUES (?, ?)`,
+          [loanId, asset.a_id],
+          'staff'
+        );
+        
+        // Mark asset as reserved (using 'loaned' status for simplicity, or add 'reserved' to enum)
+        await query(
+          `UPDATE assets SET a_status = 'loaned' WHERE a_id = ?`,
+          [asset.a_id],
+          'staff'
+        );
+      }
+    }
+    
+    // 4. Clear Cart
+    req.session.cart = [];
+    req.session.save(err => {
+      if (err) console.error('Error clearing cart:', err);
+      res.redirect('/loans');
+    });
+    
   } catch (err) {
     console.error('Error during checkout:', err);
     res.status(500).send('Error during checkout');

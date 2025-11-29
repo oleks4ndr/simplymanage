@@ -1,0 +1,59 @@
+<div class="container">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);">
+    <h1>User Management</h1>
+  </div>
+
+  {{#if success}}
+    <div class="alert alert-success">{{success}}</div>
+  {{/if}}
+  {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+  {{/if}}
+
+  <div class="card" style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+      <thead>
+        <tr style="border-bottom: 2px solid var(--slate-200);">
+          <th style="padding: var(--space-md);">ID</th>
+          <th style="padding: var(--space-md);">Name</th>
+          <th style="padding: var(--space-md);">Email</th>
+          <th style="padding: var(--space-md);">Current Role</th>
+          <th style="padding: var(--space-md);">Status</th>
+          <th style="padding: var(--space-md);">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr style="border-bottom: 1px solid var(--slate-100);">
+            <td style="padding: var(--space-md);">#{{u_id}}</td>
+            <td style="padding: var(--space-md);">{{u_fname}} {{u_lname}}</td>
+            <td style="padding: var(--space-md);">{{u_email}}</td>
+            <td style="padding: var(--space-md);">
+              <span class="badge {{#if (eq u_role 'admin')}}badge-primary{{else}}{{#if (eq u_role 'staff')}}badge-warning{{else}}badge-unavailable{{/if}}{{/if}}">
+                {{u_role}}
+              </span>
+            </td>
+            <td style="padding: var(--space-md);">
+              {{#if u_active}}
+                <span style="color: green;">Active</span>
+              {{else}}
+                <span style="color: red;">Inactive</span>
+              {{/if}}
+            </td>
+            <td style="padding: var(--space-md);">
+              <form action="/admin/users/role" method="POST" style="display: flex; gap: var(--space-sm);">
+                <input type="hidden" name="userId" value="{{u_id}}" />
+                <select name="newRole" style="padding: 4px; border-radius: 4px; border: 1px solid var(--slate-200);">
+                  <option value="user" {{#if (eq u_role 'user')}}selected{{/if}}>User</option>
+                  <option value="staff" {{#if (eq u_role 'staff')}}selected{{/if}}>Staff</option>
+                  <option value="admin" {{#if (eq u_role 'admin')}}selected{{/if}}>Admin</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-ghost">Update</button>
+              </form>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -4,6 +4,108 @@ import { query } from '../db.js';
 
 const router = express.Router();
 
+// Helper middleware to check staff role
+function checkStaff(req, res, next) {
+  if (req.session.user && (req.session.user.u_role === 'staff' || req.session.user.u_role === 'admin')) {
+    next();
+  } else {
+    res.status(403).send('Forbidden');
+  }
+}
+
+// Show Add Item Form
+router.get('/add', checkStaff, async (req, res) => {
+  try {
+    const categories = await query('SELECT * FROM categories ORDER BY cat_name ASC');
+    const categoryTree = buildCategoryTree(categories);
+    
+    res.render('itemForm', {
+      title: 'Add New Item',
+      categories: categoryTree
+    });
+  } catch (err) {
+    console.error('Error loading add item form:', err);
+    res.status(500).send('Error loading form');
+  }
+});
+
+// Process Add Item
+router.post('/add', checkStaff, async (req, res) => {
+  try {
+    const { name, sku, categoryId, description, imageUrl, maxTimeOut, renewable, active } = req.body;
+    
+    await query(
+      `INSERT INTO items (it_name, it_sku, cat_id, it_description, it_image_url, it_max_time_out, it_renewable, it_active)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, sku, categoryId, description, imageUrl, maxTimeOut, renewable === 'true', active === 'true'],
+      'staff'
+    );
+    
+    res.redirect('/items');
+  } catch (err) {
+    console.error('Error adding item:', err);
+    res.status(500).render('itemForm', { error: 'Error creating item' });
+  }
+});
+
+// Show Edit Item Form
+router.get('/:id/edit', checkStaff, async (req, res) => {
+  try {
+    const [item] = await query('SELECT * FROM items WHERE it_id = ?', [req.params.id]);
+    if (!item) return res.status(404).send('Item not found');
+
+    const categories = await query('SELECT * FROM categories ORDER BY cat_name ASC');
+    const categoryTree = buildCategoryTree(categories);
+
+    res.render('itemForm', {
+      title: 'Edit Item',
+      item,
+      categories: categoryTree
+    });
+  } catch (err) {
+    console.error('Error loading edit form:', err);
+    res.status(500).send('Error loading form');
+  }
+});
+
+// Process Edit Item
+router.post('/:id/edit', checkStaff, async (req, res) => {
+  try {
+    const { name, sku, categoryId, description, imageUrl, maxTimeOut, renewable, active } = req.body;
+    
+    await query(
+      `UPDATE items SET 
+        it_name = ?, it_sku = ?, cat_id = ?, it_description = ?, 
+        it_image_url = ?, it_max_time_out = ?, it_renewable = ?, it_active = ?
+       WHERE it_id = ?`,
+      [name, sku, categoryId, description, imageUrl, maxTimeOut, renewable === 'true', active === 'true', req.params.id],
+      'staff'
+    );
+    
+    res.redirect(`/items/${req.params.id}`);
+  } catch (err) {
+    console.error('Error updating item:', err);
+    res.status(500).send('Error updating item');
+  }
+});
+
+// Add Asset to Item
+router.post('/:id/assets/add', checkStaff, async (req, res) => {
+  try {
+    // Simple asset creation - defaults to 'available' and 'good' condition
+    // In a real app, you'd have a form for this too.
+    await query(
+      `INSERT INTO assets (it_id, a_status, a_condition, loc_id) VALUES (?, 'available', 'good', 1)`,
+      [req.params.id],
+      'staff'
+    );
+    res.redirect(`/items/${req.params.id}`);
+  } catch (err) {
+    console.error('Error adding asset:', err);
+    res.status(500).send('Error adding asset');
+  }
+});
+
 // Get all items with availability count
 router.get('/', async (req, res) => {
   try {

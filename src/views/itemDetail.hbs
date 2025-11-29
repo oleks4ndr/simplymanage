@@ -55,6 +55,12 @@
 					{{#if item.available_count}}Add to Cart{{else}}Unavailable{{/if}}
 				</button>
 			</form>
+			{{#if isStaff}}
+				<a href="/items/{{item.it_id}}/edit" class="btn btn-ghost btn-l">Edit Item</a>
+				<form action="/items/{{item.it_id}}/assets/add" method="POST" style="display: inline;">
+					<button type="submit" class="btn btn-ghost btn-l">Add Asset</button>
+				</form>
+			{{/if}}
 			<a href="/items" class="btn btn-ghost btn-l">Back to Catalog</a>
 		</div>
 	</div>
