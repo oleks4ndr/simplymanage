@@ -476,3 +476,12 @@ button.btn {
 		font-size: 13px;
 	}
 }
+
+
+
+/* =========================
+   CONTACT PAGE SPECIFIC STYLES
+   ========================= */
+textarea {
+  resize: none;
+}

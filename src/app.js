@@ -8,6 +8,14 @@ import url from 'url';
 import mysqlSession from 'express-mysql-session';
 import { pool, query } from './db.js';
 import authRoutes from './routes/auth.js';
+import itemsRoutes from './routes/items.js';
+import cartRoutes from './routes/cart.js';
+import loansRoutes from './routes/loans.js';
+import dashboardRoutes from './routes/dashboard.js';
+import adminRoutes from './routes/admin.js';
+import contactRoutes from './routes/contact.js';
+import hbs from 'hbs';
+
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -77,5 +85,35 @@ app.get('/', (req, res) => {
 // Mount auth routes
 app.use('/auth', authRoutes);
 
+
 // ------ Start Server ----------
 app.listen(process.env.PORT ?? 3000);
+
+// Mount items routes (public)
+app.use('/items', requireAuth, itemsRoutes);
+
+// Mount cart routes (requires authentication)
+app.use('/cart', requireAuth, cartRoutes);
+
+// Mount loans routes (requires authentication)
+app.use('/loans', requireAuth, loansRoutes);
+
+// Mount dashboard routes (requires staff/admin)
+app.use('/dashboard', requireStaff, dashboardRoutes);
+
+// Mount admin routes (requires admin)
+app.use('/admin', requireAdmin, adminRoutes);
+
+// Contact page (public)
+app.use('/contact', contactRoutes);
+
+// ------ Start Server ----------
+async function startServer() {
+  await testDatabaseConnection();
+
+  app.listen(PORT, () => {
+    console.log(`App running at http://localhost:${PORT}/`);
+  });
+}
+startServer();
+
