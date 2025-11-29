@@ -78,8 +78,28 @@ CREATE TABLE loan_details (
     FOREIGN KEY (a_id) REFERENCES assets(a_id)
 );
 
-CREATE TABLE user_reviews (
-    -- we need the user name or user id
-    -- need their message 
-    -- timestamp when message was sent
+
+-- Creating a Contact_Ticket table to allow users to submit support requests
+-- it will have: ticket_id(PK), user_id (FK), user_email () subject(optional), messaged(text), status (open, resolved), 
+--               created_at (timestamp)
+
+CREATE TABLE contact_tickets (
+    ticket_id INT AUTO_INCREMENT, -- this makes ticket_id the primary key, and grows automatically
+    user_id INT NULL,
+    c_fname VARCHAR(50),
+    c_lname VARCHAR(50),
+    c_email VARCHAR(100) NOT NULL, -- even if they are not logged in, we can reach them via their email
+    subject VARCHAR(160) DEFAULT NULL,
+    message TEXT NOT NULL,
+    status ENUM('open','resolved') NOT NULL DEFAULT 'open',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (ticket_id),
+    FOREIGN KEY (user_id) REFERENCES users(u_id),
+
+    -- If a user is deleted, we set user_id to NULL to keep the ticket for records
+    CONSTRAINT fk_contact_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(u_id)
+        ON DELETE SET NULL
 );
+

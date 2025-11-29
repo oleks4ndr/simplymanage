@@ -14,6 +14,7 @@ import cartRoutes from './routes/cart.js';
 import loansRoutes from './routes/loans.js';
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
+import contactRoutes from './routes/contact.js';
 import profileRoutes from './routes/profile.js';
 import hbs from 'hbs';
 
@@ -176,10 +177,7 @@ app.use('/dashboard', requireStaff, dashboardRoutes);
 app.use('/admin', requireAdmin, adminRoutes);
 
 // Contact page (public)
-app.get('/contact', (req, res) => {
-  // TODO: Contact form or information
-  res.send('Contact page - Coming soon');
-});
+app.use('/contact', contactRoutes);
 
 // ------ Start Server ----------
 async function startServer() {

@@ -1,0 +1,66 @@
+<div class="form-container">
+  <h1 class="form-title">Contact Us</h1>
+
+  {{#if error}}
+    <div class="alert alert-error">{{error}}</div>
+  {{/if}}
+
+  {{#if success}}
+    <div class="alert alert-success">{{success}}</div>
+  {{/if}}
+
+  <form action="/contact" method="POST" class="form">
+
+    {{!-- The name --}}
+    <div class="form-group">
+      <label for="fname">First Name (Optional)</label>
+      <input type="text" id="fname" name="fname" value="{{user.u_fname}}" />
+    </div>
+
+    <div class="form-group">
+      <label for="lname">Last Name (Optional)</label>
+      <input type="text" id="lname" name="lname" value="{{user.u_lname}}" />
+    </div>
+
+    {{!-- if we got the user infos --}}
+    {{#if user}}
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          type="email"
+          value="{{user.u_email}}"
+          readonly
+        />
+        <input
+          type="hidden"
+          name="email"
+          value="{{user.u_email}}"
+        />
+      </div>
+    {{!-- otherwise --}}
+    {{else}} 
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Your email"
+          required
+        />
+      </div>
+    {{/if}}
+
+    <div class="form-group">
+      <label for="subject">Subject (Optional)</label>
+      <input type="text" id="subject" name="subject" />
+    </div>
+
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Send</button>
+  </form>
+</div>

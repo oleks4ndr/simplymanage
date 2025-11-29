@@ -1239,3 +1239,12 @@ button.btn {
 		grid-template-columns: 1fr;
 	}
 }
+
+
+
+/* =========================
+   CONTACT PAGE SPECIFIC STYLES
+   ========================= */
+textarea {
+  resize: none;
+}
