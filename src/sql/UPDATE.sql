@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+USE simplymanage;
+>>>>>>> Stashed changes
 DELIMITER //
 
 CREATE PROCEDURE sp_update_user_info(
@@ -10,11 +14,23 @@ CREATE PROCEDURE sp_update_user_info(
 )
 BEGIN
     UPDATE users
+<<<<<<< Updated upstream
     SET u_fname = p_fname,
         u_lname = p_lname,
         u_email = p_email,
         u_role  = p_role,
         u_active = p_active
+=======
+    SET
+        u_fname    = COALESCE(p_fname,    u_fname),
+        u_lname    = COALESCE(p_lname,    u_lname),
+        u_email    = COALESCE(p_email,    u_email),
+        u_role     = COALESCE(p_role,     u_role),
+        u_password = COALESCE(p_password, u_password),
+        u_active   = COALESCE(p_active,   u_active)
+    WHERE u_id = p_u_id;
+END//
+>>>>>>> Stashed changes
     WHERE u_id = p_u_id;
 END//
 

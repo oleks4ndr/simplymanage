@@ -77,5 +77,35 @@ app.get('/', (req, res) => {
 // Mount auth routes
 app.use('/auth', authRoutes);
 
+<<<<<<< Updated upstream
+=======
+// Mount items routes (public)
+app.use('/items', requireAuth, itemsRoutes);
+
+// Mount cart routes (requires authentication)
+app.use('/cart', requireAuth, cartRoutes);
+
+// Mount loans routes (requires authentication)
+app.use('/loans', requireAuth, loansRoutes);
+
+// Mount profile routes (requires authentication)
+app.use('/profile', requireAuth, profileRoutes);
+
+// Mount dashboard routes (requires staff/admin)
+app.use('/dashboard', requireStaff, dashboardRoutes);
+
+// Mount admin routes (requires admin)
+app.use('/admin', requireAdmin, adminRoutes);
+
+// Mount admin routes (requires admin)
+app.use('/admin', requireAdmin, adminRoutes);
+
+// Contact page (public)
+app.get('/contact', (req, res) => {
+  // TODO: Contact form or information
+  res.send('Contact page - Coming soon');
+});
+
+>>>>>>> Stashed changes
 // ------ Start Server ----------
 app.listen(process.env.PORT ?? 3000);

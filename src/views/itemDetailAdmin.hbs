@@ -1,0 +1,231 @@
+<main class="container">
+
+  <form id="item-edit-form" 
+      action="/admin/items/{{item.it_id}}/update" 
+      method="POST"
+      enctype="multipart/form-data">
+    <div class="item-detail-container">
+
+      <div class="item-detail-image">
+        {{#if item.it_image_url}}
+            <img 
+            id="imageClickTarget"
+            src="{{item.it_image_url}}" 
+            alt="{{item.it_name}}" 
+            style="cursor: pointer;"
+            title="Click to change image"
+            />
+        {{else}}
+            <div 
+            id="imageClickTarget"
+            class="placeholder-image" 
+            style="font-size: 24px; cursor: pointer;"
+            title="Click to upload image"
+            >
+            Click to upload image
+            </div>
+        {{/if}}
+
+        {{!-- 当前图片 URL，如果没有新上传，就用这个 --}}
+        <input 
+          type="hidden" 
+          name="current_image_url" 
+          value="{{item.it_image_url}}"
+        >
+
+        {{!-- 隐藏的文件选择框，点击图片时触发它 --}}
+        <input 
+          type="file" 
+          id="imageFileInput" 
+          name="imageFile" 
+          accept="image/*" 
+          style="display:none;"
+        >
+    </div>
+
+
+    <div class="item-detail-content">
+
+        <div class="item-detail-header">
+          <h1 
+            class="editable-text" 
+            data-field="it_name"
+          >
+            {{item.it_name}}
+          </h1>
+
+          <div class="item-detail-meta">
+            <span class="badge {{#if item.available_count}}badge-success{{else}}badge-unavailable{{/if}}">
+              {{#if item.available_count}}Available{{else}}Out of Stock{{/if}}
+            </span>
+            <span class="badge badge-primary editable-text" data-field="cat_name">
+              {{item.cat_name}}
+            </span>
+          </div>
+        </div>
+
+        <div 
+          class="item-detail-description editable-text" 
+          data-field="it_description"
+        >
+          {{item.it_description}}
+        </div>
+
+        <div class="card" style="padding: var(--space-lg); margin-bottom: var(--space-xl);">
+          <div class="profile-row">
+            <span class="label">SKU</span>
+            <span class="editable-text" data-field="it_sku">{{item.it_sku}}</span>
+          </div>
+          <div class="profile-row">
+            <span class="label">Max Loan Duration (days)</span>
+            <span class="editable-text" data-field="it_max_time_out">{{item.it_max_time_out}}</span>
+          </div>
+          <div class="profile-row">
+            <span class="label">Renewable</span>
+            <span class="editable-text" data-field="it_renewable_display">
+              {{#if item.it_renewable}}Yes{{else}}No{{/if}}
+            </span>
+          </div>
+          <div class="profile-row">
+            <span class="label">Stock Availability</span>
+            <span>
+              {{item.available_count}} / {{item.total_count}}
+            </span>
+          </div>
+        </div>
+
+        <div class="item-detail-actions" style="gap: 1rem;">
+          <button type="submit" class="btn btn-primary btn-l">
+            Save Changes
+          </button>
+          <a href="/items" class="btn btn-ghost btn-l">
+            Back to Catalog
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <input type="hidden" name="it_name"           id="field-it_name"           value="{{item.it_name}}">
+    <input type="hidden" name="cat_name"          id="field-cat_name"          value="{{item.cat_name}}">
+    <input type="hidden" name="it_description"    id="field-it_description"    value="{{item.it_description}}">
+    <input type="hidden" name="it_sku"            id="field-it_sku"            value="{{item.it_sku}}">
+    <input type="hidden" name="it_max_time_out"   id="field-it_max_time_out"   value="{{item.it_max_time_out}}">
+    <input type="hidden" name="it_renewable"      id="field-it_renewable"      value="{{item.it_renewable}}">
+  </form>
+
+</main>
+<script>
+  const clickTarget = document.getElementById('imageClickTarget');
+  const fileInput   = document.getElementById('imageFileInput');
+
+  if (clickTarget && fileInput) {
+    // 点击图片或占位框 → 打开文件选择框
+    clickTarget.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 选择文件后预览
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      // 只简单检查一下是图片
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose an image file.');
+        fileInput.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+
+        // 如果原来是 img，就直接改 src
+        if (clickTarget.tagName.toLowerCase() === 'img') {
+          clickTarget.src = dataUrl;
+        } else {
+          // 如果原来是 div 占位，就变成真正的图片
+          const img = document.createElement('img');
+          img.id = 'imageClickTarget';
+          img.src = dataUrl;
+          img.alt = 'Item image';
+          img.style.cursor = 'pointer';
+          img.title = 'Click to change image';
+
+          // 把占位 div 替换成 img
+          clickTarget.replaceWith(img);
+
+          // 重新绑定点击事件到新的 img
+          img.addEventListener('click', () => fileInput.click());
+        }
+      };
+
+      reader.readAsDataURL(file);  // 把图片读成 base64 方便预览
+    });
+  }
+</script>
+
+<script>
+  document.querySelectorAll('.editable-text').forEach(el => {
+    el.addEventListener('click', () => {
+      el.contentEditable = 'true';
+      el.classList.add('editing');
+      el.focus();
+    });
+
+    el.addEventListener('blur', () => {
+      el.contentEditable = 'false';
+      el.classList.remove('editing');
+      const field = el.dataset.field;
+      const hiddenInput = document.getElementById('field-' + field);
+      if (hiddenInput) {
+        hiddenInput.value = el.innerText.trim();
+      }
+    });
+
+    el.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        el.blur();
+      }
+    });
+  });
+
+  const image = document.getElementById('item-image');
+  const placeholder = document.getElementById('item-image-placeholder');
+  const imageUrlEditor = document.querySelector('.image-url-editor');
+  const imageUrlInput = document.getElementById('imageUrlInput');
+
+  function showImageEditor() {
+    if (!imageUrlEditor) return;
+    imageUrlEditor.style.display = 'block';
+    imageUrlInput.focus();
+  }
+
+  if (image) {
+    image.addEventListener('click', showImageEditor);
+  }
+  if (placeholder) {
+    placeholder.addEventListener('click', showImageEditor);
+  }
+
+  if (imageUrlInput) {
+    imageUrlInput.addEventListener('input', () => {
+      const url = imageUrlInput.value.trim();
+      if (image) {
+        image.src = url || image.src;
+      }
+      if (placeholder && url) {
+        placeholder.innerText = url;
+      }
+    });
+  }
+</script>
+
+<style>
+  .editable-text.editing {
+    outline: 1px dashed #888;
+    background-color: rgba(255, 255, 0, 0.1);
+  }
+</style>

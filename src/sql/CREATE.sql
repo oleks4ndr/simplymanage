@@ -80,4 +80,18 @@ CREATE TABLE loan_details (
     PRIMARY KEY (l_id,a_id),
     FOREIGN KEY (l_id) REFERENCES loans(l_id),
     FOREIGN KEY (a_id) REFERENCES assets(a_id)
+<<<<<<< Updated upstream
 );
+=======
+);
+
+CREATE TABLE user_reviews (
+    u_id INT AUTO_INCREMENT PRIMARY KEY,
+    review_massage TEXT,
+    reveiw_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (u_id) REFERENCES users(u_id)
+-- we need the user name or user id
+-- need their message 
+-- timestamp when message was sent
+);
+>>>>>>> Stashed changes
