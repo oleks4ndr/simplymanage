@@ -5,22 +5,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// .env is in the project root
-config({ path: path.resolve(__dirname, '../.env') });
-
-
-// needed in .env
-
-// for DB
-/*
-DB_HOST
-DB_USER
-DB_PASS
-DB_NAME
-
-
-// extra
-PORT
-
-SESSION_SECRET
-*/
+// Only load .env file in development
+// In production (Render), environment variables are already set by the platform
+if (process.env.NODE_ENV !== 'production') {
+  config({ path: path.resolve(__dirname, '../.env') });
+}
