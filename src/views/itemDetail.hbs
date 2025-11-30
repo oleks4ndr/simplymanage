@@ -48,7 +48,7 @@
 				<input type="hidden" name="itemId" value="{{item.it_id}}" />
 				<button 
 					type="submit" 
-					class="btn btn-primary btn-l" 
+					class="btn btn-primary" 
 					style="width: 100%;" 
 					{{#unless item.available_count}}disabled{{/unless}}
 				>
@@ -56,12 +56,12 @@
 				</button>
 			</form>
 			{{#if isStaff}}
-				<a href="/items/{{item.it_id}}/edit" class="btn btn-ghost btn-l">Edit Item</a>
+				<a href="/items/{{item.it_id}}/edit" class="btn btn-ghost">Edit Item</a>
 				<form action="/items/{{item.it_id}}/assets/add" method="POST" style="display: inline;">
-					<button type="submit" class="btn btn-ghost btn-l">Add Asset</button>
+					<button type="submit" class="btn btn-ghost">Add Asset</button>
 				</form>
 			{{/if}}
-			<a href="/items" class="btn btn-ghost btn-l">Back to Catalog</a>
+			<a href="/items" class="btn btn-ghost">Back to Catalog</a>
 		</div>
 	</div>
 </div>

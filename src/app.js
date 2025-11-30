@@ -76,6 +76,18 @@ hbs.registerHelper('range', function(n) {
   return Array(n).fill(0);
 });
 
+hbs.registerHelper('formatDate', function(date) {
+  if (!date) return '';
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+});
+
 // ------ Middleware and Sessions ----------
 // Trust proxy - required for Render.com and other reverse proxies
 app.set('trust proxy', 1);

@@ -868,6 +868,7 @@ button.btn {
 
 .item-actions {
 	display: flex;
+	align-items: center;
 	gap: var(--space-sm);
 	margin-top: auto;
 	padding-top: var(--space-md);
@@ -1152,6 +1153,7 @@ button.btn {
 .item-detail-actions {
 	margin-top: auto;
 	display: flex;
+	align-items: center;
 	gap: var(--space-md);
 }
 

@@ -19,19 +19,19 @@
 			{{/if}}
 		</p>
 		<div class="item-actions">
-			<a href="/items/{{it_id}}" class="btn btn-ghost btn-sm">Details</a>
+			<a href="/items/{{it_id}}" class="btn btn-ghost">Details</a>
 			{{#if (gt available_count 0)}}
-				{{#if ../isAuthenticated}}
+				{{#if @root.isAuthenticated}}
 					<form action="/cart/add" method="POST" style="display:inline;">
 						<input type="hidden" name="itemId" value="{{it_id}}" />
 						<input type="hidden" name="quantity" value="1" />
-						<button type="submit" class="btn btn-dark btn-sm">Add to Cart</button>
+						<button type="submit" class="btn btn-dark">Add to Cart</button>
 					</form>
 				{{else}}
-					<a href="/auth/login" class="btn btn-dark btn-sm">Add to Cart</a>
+					<a href="/auth/login" class="btn btn-dark">Add to Cart</a>
 				{{/if}}
 			{{else}}
-				<button class="btn btn-dark btn-sm" disabled>Add to Cart</button>
+				<button class="btn btn-dark" disabled>Add to Cart</button>
 			{{/if}}
 		</div>
 	</div>

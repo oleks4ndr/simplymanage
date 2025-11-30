@@ -32,13 +32,19 @@ router.get('/', async (req, res) => {
       [],
       'admin'
     );
+    const openMessages = await query(
+      'SELECT COUNT(*) as count FROM contact_tickets WHERE status = ?',
+      ['open'],
+      'admin'
+    );
 
     res.render('admin/dashboard', {
       title: 'Admin Dashboard',
       stats: {
         totalUsers: totalUsers[0].count,
         totalItems: totalItems[0].count,
-        totalAssets: totalAssets[0].count
+        totalAssets: totalAssets[0].count,
+        openMessages: openMessages[0].count
       }
     });
   } catch (err) {
@@ -328,17 +334,28 @@ router.get('/audit/modifications', async (req, res) => {
 
     // Parse JSON fields
     modifications.forEach(mod => {
+      // Handle old_info - can be either JSON string or already parsed object
       if (mod.old_info) {
         try {
-          mod.old_info_parsed = JSON.parse(mod.old_info);
+          // If it's already an object (MySQL JSON type), use it directly
+          mod.old_info_parsed = typeof mod.old_info === 'string' 
+            ? JSON.parse(mod.old_info) 
+            : mod.old_info;
         } catch (e) {
+          console.error('Error parsing old_info:', e);
           mod.old_info_parsed = null;
         }
       }
+      
+      // Handle new_info - can be either JSON string or already parsed object
       if (mod.new_info) {
         try {
-          mod.new_info_parsed = JSON.parse(mod.new_info);
+          // If it's already an object (MySQL JSON type), use it directly
+          mod.new_info_parsed = typeof mod.new_info === 'string' 
+            ? JSON.parse(mod.new_info) 
+            : mod.new_info;
         } catch (e) {
+          console.error('Error parsing new_info:', e);
           mod.new_info_parsed = null;
         }
       }
@@ -410,6 +427,112 @@ router.get('/audit/roles', async (req, res) => {
   } catch (err) {
     console.error('Error loading role audit:', err);
     res.status(500).send('Error loading audit history');
+  }
+});
+
+// =============================================
+// USER MESSAGES / CONTACT TICKETS ROUTES
+// =============================================
+
+// View all contact messages
+router.get('/messages', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 50;
+    const offset = (page - 1) * limit;
+    const statusFilter = req.query.status || 'all';
+
+    // Build WHERE clause for filtering
+    let whereClause = '';
+    let params = [];
+    if (statusFilter && ['open', 'resolved'].includes(statusFilter)) {
+      whereClause = 'WHERE ct.status = ?';
+      params.push(statusFilter);
+    }
+
+    // Get total count for pagination
+    const countQuery = `SELECT COUNT(*) as count FROM contact_tickets ct ${whereClause}`;
+    const countResult = await query(countQuery, params, 'admin');
+    const totalRecords = countResult[0].count;
+    const totalPages = Math.ceil(totalRecords / limit);
+
+    // Get statistics
+    const statsResult = await query(
+      `SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'open' THEN 1 ELSE 0 END) as open,
+        SUM(CASE WHEN status = 'resolved' THEN 1 ELSE 0 END) as resolved
+      FROM contact_tickets`,
+      [],
+      'admin'
+    );
+    const stats = statsResult[0];
+
+    // Get messages
+    const messages = await query(
+      `SELECT 
+        ct.ticket_id,
+        ct.user_id,
+        ct.c_fname,
+        ct.c_lname,
+        ct.c_email,
+        ct.subject,
+        ct.message,
+        ct.status,
+        ct.created_at,
+        u.u_fname,
+        u.u_lname,
+        u.u_email as user_email
+      FROM contact_tickets ct
+      LEFT JOIN users u ON ct.user_id = u.u_id
+      ${whereClause}
+      ORDER BY ct.created_at DESC
+      LIMIT ${limit} OFFSET ${offset}`,
+      params,
+      'admin'
+    );
+
+    res.render('admin/messages', {
+      title: 'User Messages',
+      messages,
+      stats,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalRecords
+      },
+      filter: {
+        status: statusFilter
+      }
+    });
+  } catch (err) {
+    console.error('Error loading messages:', err);
+    res.status(500).send('Error loading messages');
+  }
+});
+
+// Mark message as resolved
+router.post('/messages/mark-resolved', async (req, res) => {
+  try {
+    const { ticketId } = req.body;
+    
+    if (!ticketId) {
+      req.session.flash = { type: 'error', message: 'Ticket ID is required' };
+      return res.redirect('/admin/messages');
+    }
+
+    await query(
+      'UPDATE contact_tickets SET status = ? WHERE ticket_id = ?',
+      ['resolved', ticketId],
+      'admin'
+    );
+
+    req.session.flash = { type: 'success', message: 'Message marked as resolved' };
+    res.redirect('/admin/messages');
+  } catch (err) {
+    console.error('Error marking message as resolved:', err);
+    req.session.flash = { type: 'error', message: 'Error updating message status' };
+    res.redirect('/admin/messages');
   }
 });
 

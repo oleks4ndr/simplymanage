@@ -1,0 +1,265 @@
+<div class="container">
+	<h1 style="margin-bottom: var(--space-lg);">User Messages</h1>
+
+	{{#if flash}}
+		<div class="alert alert-{{flash.type}}">{{flash.message}}</div>
+	{{/if}}
+
+	<!-- Statistics Cards -->
+	<div
+		style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-lg); margin-bottom: var(--space-2xl);"
+	>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Total Messages</h3>
+			<p
+				style="font-size: 36px; font-weight: 800; color: var(--blue-500); margin: 0;"
+			>{{stats.total}}</p>
+		</div>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Open</h3>
+			<p
+				style="font-size: 36px; font-weight: 800; color: #f59e0b; margin: 0;"
+			>{{stats.open}}</p>
+		</div>
+		<div class="card" style="text-align: center;">
+			<h3
+				style="color: var(--muted); font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm);"
+			>Resolved</h3>
+			<p
+				style="font-size: 36px; font-weight: 800; color: #10b981; margin: 0;"
+			>{{stats.resolved}}</p>
+		</div>
+	</div>
+
+	<!-- Filter Tabs -->
+	<div style="margin-bottom: var(--space-xl);">
+		<div
+			style="display: flex; gap: var(--space-sm); border-bottom: 2px solid var(--border-color);"
+		>
+			<a
+				href="/admin/messages?status=all"
+				class="filter-tab {{#unless filter.status}}active{{/unless}} {{#if
+				(eq filter.status 'all')}}active{{/if}}"
+				style="padding: var(--space-sm) var(--space-lg); text-decoration: none; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; transition: all var(--transition-base);"
+			>
+				All
+			</a>
+			<a
+				href="/admin/messages?status=open"
+				class="filter-tab {{#if (eq filter.status 'open')}}active{{/if}}"
+				style="padding: var(--space-sm) var(--space-lg); text-decoration: none; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; transition: all var(--transition-base);"
+			>
+				Open
+			</a>
+			<a
+				href="/admin/messages?status=resolved"
+				class="filter-tab {{#if (eq filter.status 'resolved')}}active{{/if}}"
+				style="padding: var(--space-sm) var(--space-lg); text-decoration: none; color: var(--muted); font-weight: 600; border-bottom: 3px solid transparent; transition: all var(--transition-base);"
+			>
+				Resolved
+			</a>
+		</div>
+	</div>
+
+	<!-- Messages Table -->
+	<div class="card" style="overflow-x: auto;">
+		{{#if messages.length}}
+			<table style="width: 100%; border-collapse: collapse;">
+				<thead>
+					<tr style="border-bottom: 2px solid var(--border-color);">
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>ID</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>Date</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>From</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>Email</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>Subject</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>Status</th>
+						<th
+							style="padding: var(--space-md); text-align: left; font-weight: 700; color: var(--dark);"
+						>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#each messages}}
+						<tr
+							style="border-bottom: 1px solid var(--border-color); cursor: pointer;"
+							onclick="toggleMessage({{ticket_id}})"
+						>
+							<td
+								style="padding: var(--space-md); font-family: 'Courier New', monospace; color: var(--muted);"
+							>#{{ticket_id}}</td>
+							<td
+								style="padding: var(--space-md); font-size: 14px; color: var(--muted);"
+							>
+								{{formatDate created_at}}
+							</td>
+							<td style="padding: var(--space-md);">
+								{{#if user_id}}
+									<strong>{{u_fname}}
+										{{u_lname}}</strong>
+								{{else}}
+									{{#if c_fname}}
+										{{c_fname}}
+										{{c_lname}}
+									{{else}}
+										<em style="color: var(--muted);">Guest</em>
+									{{/if}}
+								{{/if}}
+							</td>
+							<td style="padding: var(--space-md); font-size: 14px;">
+								{{#if user_id}}
+									{{user_email}}
+								{{else}}
+									{{c_email}}
+								{{/if}}
+							</td>
+							<td style="padding: var(--space-md); max-width: 250px;">
+								{{#if subject}}
+									{{subject}}
+								{{else}}
+									<em style="color: var(--muted);">No subject</em>
+								{{/if}}
+							</td>
+							<td style="padding: var(--space-md);">
+								{{#if (eq status 'open')}}
+									<span
+										style="display: inline-block; padding: 4px 12px; background-color: #fef3c7; color: #92400e; border-radius: 12px; font-size: 12px; font-weight: 600;"
+									>
+										Open
+									</span>
+								{{else}}
+									<span
+										style="display: inline-block; padding: 4px 12px; background-color: #d1fae5; color: #065f46; border-radius: 12px; font-size: 12px; font-weight: 600;"
+									>
+										Resolved
+									</span>
+								{{/if}}
+							</td>
+							<td style="padding: var(--space-md);">
+								{{#if (eq status 'open')}}
+									<form
+										action="/admin/messages/mark-resolved"
+										method="POST"
+										style="display: inline;"
+										onclick="event.stopPropagation();"
+									>
+										<input type="hidden" name="ticketId" value="{{ticket_id}}" />
+										<button
+											type="submit"
+											class="btn btn-sm"
+											style="padding: 6px 12px; font-size: 12px; background-color: #10b981; color: white;"
+										>
+											Mark Resolved
+										</button>
+									</form>
+								{{else}}
+									<span style="color: var(--muted); font-size: 12px;">—</span>
+								{{/if}}
+							</td>
+						</tr>
+						<tr
+							id="message-{{ticket_id}}"
+							style="display: none; background-color: #f9fafb;"
+						>
+							<td colspan="7" style="padding: var(--space-lg);">
+								<div style="max-width: 800px;">
+									<h4
+										style="margin-bottom: var(--space-sm); color: var(--dark); font-size: 16px;"
+									>Message:</h4>
+									<div
+										style="background-color: white; padding: var(--space-lg); border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap; line-height: 1.6; color: var(--dark);"
+									>
+										{{message}}
+									</div>
+								</div>
+							</td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		{{else}}
+			<div style="padding: var(--space-3xl); text-align: center; color: var(--muted);">
+				<p style="font-size: 18px; margin-bottom: var(--space-sm);">📭 No messages
+					found</p>
+				<p style="font-size: 14px;">
+					{{#if (eq filter.status 'open')}}
+						There are no open messages at the moment.
+					{{else if (eq filter.status 'resolved')}}
+						There are no resolved messages yet.
+					{{else}}
+						No messages have been submitted yet.
+					{{/if}}
+				</p>
+			</div>
+		{{/if}}
+	</div>
+
+	<!-- Pagination -->
+	{{#if (gt pagination.totalPages 1)}}
+		<div
+			style="display: flex; justify-content: center; align-items: center; gap: var(--space-md); margin-top: var(--space-2xl);"
+		>
+			{{#if (gt pagination.currentPage 1)}}
+				<a
+					href="/admin/messages?status={{filter.status}}&page={{subtract
+						pagination.currentPage
+						1
+					}}"
+					class="btn btn-secondary"
+				>
+					← Previous
+				</a>
+			{{/if}}
+
+			<span style="color: var(--muted); font-size: 14px;">
+				Page
+				{{pagination.currentPage}}
+				of
+				{{pagination.totalPages}}
+				({{pagination.totalRecords}}
+				total)
+			</span>
+
+			{{#if (lt pagination.currentPage pagination.totalPages)}}
+				<a
+					href="/admin/messages?status={{filter.status}}&page={{add
+						pagination.currentPage
+						1
+					}}"
+					class="btn btn-secondary"
+				>
+					Next →
+				</a>
+			{{/if}}
+		</div>
+	{{/if}}
+</div>
+
+<script>
+	function toggleMessage(ticketId) { const row =
+	document.getElementById('message-' + ticketId); if (row.style.display ===
+	'none' || row.style.display === '') { row.style.display = 'table-row'; }
+	else { row.style.display = 'none'; } }
+</script>
+
+<style>
+	.filter-tab:hover { color: var(--dark); border-bottom-color:
+	var(--blue-300); } .filter-tab.active { color: var(--blue-500);
+	border-bottom-color: var(--blue-500); } tbody tr:hover { background-color:
+	#f9fafb; }
+</style>

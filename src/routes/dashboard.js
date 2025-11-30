@@ -132,22 +132,14 @@ router.post('/loans/:id/reject', async (req, res) => {
   try {
     const loanId = req.params.id;
 
-    // 1. Update Loan Status
-    await query(
-      `UPDATE loans SET l_status = 'rejected' WHERE l_id = ?`,
-      [loanId],
-      'staff'
-    );
-
-    // 2. Release Reserved Assets
-    // Find all assets associated with this loan
+    // 1. Get all assets associated with this loan
     const assets = await query(
       `SELECT a_id FROM loan_details WHERE l_id = ?`,
       [loanId],
       'staff'
     );
 
-    // Set them back to available
+    // 2. Set assets back to available
     for (const asset of assets) {
       await query(
         `UPDATE assets SET a_status = 'available' WHERE a_id = ?`,
@@ -155,6 +147,20 @@ router.post('/loans/:id/reject', async (req, res) => {
         'staff'
       );
     }
+
+    // 3. Delete loan details first (foreign key constraint)
+    await query(
+      `DELETE FROM loan_details WHERE l_id = ?`,
+      [loanId],
+      'admin'
+    );
+
+    // 4. Delete the loan itself
+    await query(
+      `DELETE FROM loans WHERE l_id = ?`,
+      [loanId],
+      'admin'
+    );
 
     res.redirect('/dashboard');
   } catch (err) {
