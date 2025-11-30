@@ -16,6 +16,7 @@ import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
 import contactRoutes from './routes/contact.js';
 import profileRoutes from './routes/profile.js';
+import categoriesRoutes from './routes/categories.js';
 import hbs from 'hbs';
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -65,6 +66,14 @@ hbs.registerHelper('lt', function(a, b) {
 
 hbs.registerHelper('json', function(context) {
   return JSON.stringify(context, null, 2);
+});
+
+hbs.registerHelper('multiply', function(a, b) {
+  return a * b;
+});
+
+hbs.registerHelper('range', function(n) {
+  return Array(n).fill(0);
 });
 
 // ------ Middleware and Sessions ----------
@@ -191,6 +200,9 @@ app.use('/dashboard', requireStaff, dashboardRoutes);
 
 // Mount admin routes (requires admin)
 app.use('/admin', requireAdmin, adminRoutes);
+
+// Mount categories routes (requires staff/admin)
+app.use('/categories', requireStaff, categoriesRoutes);
 
 // Contact page (public)
 app.use('/contact', contactRoutes);

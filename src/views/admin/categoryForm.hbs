@@ -1,0 +1,52 @@
+<div class="container" style="max-width: 600px;">
+	<div
+		style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);"
+	>
+		<h1 style="margin: 0;">{{title}}</h1>
+		<a href="/categories" class="btn btn-ghost">← Back</a>
+	</div>
+
+	<div class="card">
+		<form
+			action="{{#if category}}/categories/{{category.cat_id}}/edit{{else}}/categories/add{{/if}}"
+			method="POST"
+		>
+			<div style="margin-bottom: var(--space-lg);">
+				<label for="name" style="display: block; margin-bottom: var(--space-sm); font-weight: 600;">Category Name
+					<span style="color: var(--red-500);">*</span></label>
+				<input
+					type="text"
+					id="name"
+					name="name"
+					value="{{category.cat_name}}"
+					required
+					style="width: 100%; padding: var(--space-md); border: 1px solid var(--slate-300); border-radius: var(--radius-md); font-size: 16px;"
+					placeholder="e.g., Electronics, Laptops, etc."
+				/>
+			</div>
+
+			<div style="margin-bottom: var(--space-xl);">
+				<label
+					for="parentId"
+					style="display: block; margin-bottom: var(--space-sm); font-weight: 600;"
+				>Parent Category
+					<span style="color: var(--muted); font-weight: 400; font-size: 14px;">(optional)</span></label>
+				<select
+					id="parentId"
+					name="parentId"
+					style="width: 100%; padding: var(--space-md); border: 1px solid var(--slate-300); border-radius: var(--radius-md); font-size: 16px;"
+				>
+					<option value="">None (Top-level category)</option>
+					{{#each categories}}
+						{{> categoryOption this selectedId=../category.cat_parent_id depth=0}}
+					{{/each}}
+				</select>
+			</div>
+
+			<div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+				<a href="/categories" class="btn btn-ghost">Cancel</a>
+				<button type="submit" class="btn btn-primary">{{#if category}}Save Changes{{else}}Add Category{{/if}}</button>
+			</div>
+		</form>
+	</div>
+</div>

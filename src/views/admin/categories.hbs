@@ -1,0 +1,80 @@
+<div class="container">
+	<div
+		style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xl);"
+	>
+		<h1 style="margin: 0;">Manage Categories</h1>
+		<div style="display: flex; gap: var(--space-md);">
+			<a href="/items" class="btn btn-ghost">← Back to Catalog</a>
+			<a href="/categories/add" class="btn btn-primary">+ Add Category</a>
+		</div>
+	</div>
+
+	{{#if categories.length}}
+		<div class="card">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Category Name</th>
+						<th>ID</th>
+						<th>Parent ID</th>
+						<th style="text-align: right;">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#each categories}}
+						<tr>
+							<td>
+								<span style="padding-left: {{multiply depth 24}}px;">
+									{{#if (gt depth 0)}}
+										<span style="color: var(--muted);">└─</span>
+									{{/if}}
+									{{cat_name}}
+								</span>
+							</td>
+							<td>{{cat_id}}</td>
+							<td>{{#if cat_parent_id}}{{cat_parent_id}}{{else}}<span
+										style="color: var(--muted);"
+									>—</span>{{/if}}</td>
+							<td style="text-align: right;">
+								<div
+									style="display: flex; gap: var(--space-sm); justify-content: flex-end;"
+								>
+									<a
+										href="/categories/{{cat_id}}/edit"
+										class="btn btn-sm btn-ghost"
+									>Edit</a>
+									<form
+										action="/categories/{{cat_id}}/delete"
+										method="POST"
+										style="display: inline;"
+										onsubmit="return confirm('Delete this category and all its subcategories? Items will be moved to parent category or unassigned.');"
+									>
+										<button
+											type="submit"
+											class="btn btn-sm btn-ghost"
+											style="color: var(--red-600);"
+										>Delete</button>
+									</form>
+								</div>
+							</td>
+						</tr>
+					{{/each}}
+				</tbody>
+			</table>
+		</div>
+	{{else}}
+		<div class="card" style="text-align: center; padding: var(--space-3xl);">
+			<p style="color: var(--muted); margin-bottom: var(--space-lg);">No categories
+				yet. Create your first one!</p>
+			<a href="/categories/add" class="btn btn-primary">+ Add Category</a>
+		</div>
+	{{/if}}
+</div>
+
+<style>
+	.table { width: 100%; border-collapse: collapse; } .table th { text-align: left;
+	padding: var(--space-md); border-bottom: 2px solid var(--slate-200); font-weight: 600;
+	font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing:
+	0.5px; } .table td { padding: var(--space-md); border-bottom: 1px solid
+	var(--slate-100); } .table tbody tr:hover { background-color: var(--slate-50); }
+</style>

@@ -179,13 +179,25 @@ router.get('/', async (req, res) => {
     // Build category tree
     const categoryTree = buildCategoryTree(categories);
     
+    // Build breadcrumb path if category is selected
+    let breadcrumb = [];
+    if (category) {
+      const catId = parseInt(category);
+      const selectedCat = categories.find(c => c.cat_id === catId);
+      if (selectedCat) {
+        // Build path from root to selected category
+        breadcrumb = buildCategoryPath(catId, categories);
+      }
+    }
+    
     res.render('items', {
       title: 'Catalog',
       items,
       categories: categoryTree,
       search: search || '',
       selectedCategory: category || '',
-      showOnlyAvailable: showOnlyAvailable === 'true'
+      showOnlyAvailable: showOnlyAvailable === 'true',
+      breadcrumb
     });
   } catch (err) {
     console.error('Error fetching items:', err);
@@ -241,6 +253,24 @@ function getAllDescendantIds(categoryId, allCategories) {
   
   findChildren(categoryId);
   return descendants;
+}
+
+// Helper function to build category breadcrumb path
+function buildCategoryPath(categoryId, allCategories) {
+  const path = [];
+  let currentId = categoryId;
+  
+  while (currentId) {
+    const cat = allCategories.find(c => c.cat_id === currentId);
+    if (cat) {
+      path.unshift({ cat_id: cat.cat_id, cat_name: cat.cat_name });
+      currentId = cat.cat_parent_id;
+    } else {
+      break;
+    }
+  }
+  
+  return path;
 }
 
 // Helper function to build category tree

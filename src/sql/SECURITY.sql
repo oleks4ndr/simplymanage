@@ -51,7 +51,8 @@ GRANT INSERT, SELECT ON simplymanage.loan_details TO 'simply_user'@'localhost';
 
 -- Grant User Privileges
 GRANT SELECT ON simplymanage.items TO 'simply_staff'@'localhost';
-GRANT SELECT ON simplymanage.categories TO 'simply_staff'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON simplymanage.categories TO 'simply_staff'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON simplymanage.categories_children TO 'simply_staff'@'localhost';
 GRANT SELECT ON simplymanage.assets TO 'simply_staff'@'localhost';
 GRANT SELECT, UPDATE ON simplymanage.users TO 'simply_staff'@'localhost';
 GRANT INSERT, SELECT ON simplymanage.loans TO 'simply_staff'@'localhost';

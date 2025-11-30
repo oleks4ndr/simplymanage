@@ -1,0 +1,10 @@
+{{!-- Recursive partial for category dropdown with indentation --}}
+<option value="{{cat_id}}" {{#if (eq cat_id selectedId)}}selected{{/if}}>
+	{{#if (gt depth 0)}}
+		{{#each (range depth)}}└─{{/each}}
+	{{/if}}
+	{{cat_name}}
+</option>
+{{#each children}}
+	{{> categoryOption this selectedId=../selectedId depth=(add ../depth 1)}}
+{{/each}}
