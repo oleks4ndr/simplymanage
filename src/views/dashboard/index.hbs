@@ -88,7 +88,6 @@
 								<th style="padding: var(--space-md);">Checked Out</th>
 								<th style="padding: var(--space-md);">Due Date</th>
 								<th style="padding: var(--space-md);">Items</th>
-								<th style="padding: var(--space-md);">Status</th>
 								<th style="padding: var(--space-md);">Actions</th>
 							</tr>
 						</thead>
@@ -119,12 +118,9 @@
 									<td style="padding: var(--space-md);">{{item_count}}
 										items</td>
 									<td style="padding: var(--space-md);">
-										<span
-											class="badge badge-primary"
-										>{{l_status}}</span>
-									</td>
-									<td style="padding: var(--space-md);">
-										<div style="display: flex; gap: var(--space-sm);">
+										<div
+											style="display: flex; gap: var(--space-sm); align-items: center;"
+										>
 											<a
 												href="/dashboard/loans/{{l_id}}"
 												class="btn btn-sm btn-ghost"
