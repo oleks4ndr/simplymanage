@@ -77,6 +77,9 @@ hbs.registerHelper('range', function(n) {
 });
 
 // ------ Middleware and Sessions ----------
+// Trust proxy - required for Render.com and other reverse proxies
+app.set('trust proxy', 1);
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: false}));
 
@@ -108,6 +111,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
+  proxy: true, // Trust the reverse proxy
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
