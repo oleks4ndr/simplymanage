@@ -68,7 +68,98 @@
 			{{/if}}
 		</section>
 
-		<!-- Quick Stats (Placeholder) -->
+		<!-- Current Loans Section -->
+		<section class="card">
+			<h2
+				style="margin-bottom: var(--space-lg); border-bottom: 1px solid var(--slate-200); padding-bottom: var(--space-sm);"
+			>
+				Current Loans
+			</h2>
+
+			{{#if currentLoans.length}}
+				<div style="overflow-x: auto;">
+					<table
+						style="width: 100%; border-collapse: collapse; text-align: left;"
+					>
+						<thead>
+							<tr style="border-bottom: 2px solid var(--slate-200);">
+								<th style="padding: var(--space-md);">Loan ID</th>
+								<th style="padding: var(--space-md);">User</th>
+								<th style="padding: var(--space-md);">Checked Out</th>
+								<th style="padding: var(--space-md);">Due Date</th>
+								<th style="padding: var(--space-md);">Items</th>
+								<th style="padding: var(--space-md);">Status</th>
+								<th style="padding: var(--space-md);">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{#each currentLoans}}
+								<tr style="border-bottom: 1px solid var(--slate-100);">
+									<td style="padding: var(--space-md);">#{{l_id}}</td>
+									<td style="padding: var(--space-md);">
+										<div>{{u_fname}} {{u_lname}}</div>
+										<div
+											style="font-size: 12px; color: var(--muted);"
+										>{{u_email}}</div>
+									</td>
+									<td
+										style="padding: var(--space-md); font-size: 13px;"
+									>{{l_checked_out_at}}</td>
+									<td
+										style="padding: var(--space-md); font-size: 13px;"
+									>
+										{{l_due_at}}
+										{{#if is_overdue}}
+											<span
+												class="badge badge-warning"
+												style="margin-left: var(--space-xs); background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;"
+											>OVERDUE</span>
+										{{/if}}
+									</td>
+									<td style="padding: var(--space-md);">{{item_count}}
+										items</td>
+									<td style="padding: var(--space-md);">
+										<span
+											class="badge badge-primary"
+										>{{l_status}}</span>
+									</td>
+									<td style="padding: var(--space-md);">
+										<div style="display: flex; gap: var(--space-sm);">
+											<a
+												href="/dashboard/loans/{{l_id}}"
+												class="btn btn-sm btn-ghost"
+											>View</a>
+											<form
+												action="/dashboard/loans/{{l_id}}/checkin"
+												method="POST"
+												style="display: inline;"
+											>
+												<button
+													type="submit"
+													class="btn btn-sm btn-primary"
+													onclick="return confirm('Check in this loan? All assets will be returned to available status.');"
+												>
+													Check In
+												</button>
+											</form>
+										</div>
+									</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+				</div>
+			{{else}}
+				<div
+					class="empty-state"
+					style="padding: var(--space-xl); text-align: center;"
+				>
+					<p>No current loans.</p>
+				</div>
+			{{/if}}
+		</section>
+
+		<!-- Quick Stats -->
 		<section class="card">
 			<h2
 				style="margin-bottom: var(--space-lg); border-bottom: 1px solid var(--slate-200); padding-bottom: var(--space-sm);"
@@ -86,7 +177,14 @@
 					>{{pendingLoans.length}}</div>
 					<div style="font-size: 14px; color: var(--blue-700);">Pending Requests</div>
 				</div>
-				<!-- Add more stats here later -->
+				<div
+					style="text-align: center; padding: var(--space-md); background: #ecfdf5; border-radius: 8px;"
+				>
+					<div
+						style="font-size: 24px; font-weight: 800; color: #059669;"
+					>{{currentLoans.length}}</div>
+					<div style="font-size: 14px; color: #047857;">Current Loans</div>
+				</div>
 			</div>
 		</section>
 

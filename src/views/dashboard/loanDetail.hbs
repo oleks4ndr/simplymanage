@@ -64,12 +64,26 @@
 				<div
 					style="display: flex; gap: var(--space-md); justify-content: flex-end; border-top: 1px solid var(--slate-200); padding-top: var(--space-lg);"
 				>
-					<button
-						type="button"
-						class="btn btn-ghost"
-						onclick="document.getElementById('rejectForm').submit()"
-					>Reject Request</button>
-					<button type="submit" class="btn btn-primary">Approve Loan</button>
+					{{#if (eq loan.l_status "pending")}}
+						<button
+							type="button"
+							class="btn btn-ghost"
+							onclick="document.getElementById('rejectForm').submit()"
+						>Reject Request</button>
+						<button type="submit" class="btn btn-primary">Approve Loan</button>
+					{{else if
+						(or
+							(eq loan.l_status "active")
+							(eq loan.l_status "open")
+							(eq loan.l_status "overdue")
+						)
+					}}
+						<button
+							type="button"
+							class="btn btn-primary"
+							onclick="if(confirm('Check in this loan? All assets will be returned to available status.')) { document.getElementById('checkinForm').submit(); }"
+						>Check In Loan</button>
+					{{/if}}
 				</div>
 			</form>
 
@@ -80,6 +94,15 @@
 				style="display: none;"
 			>
 				<!-- Hidden form for rejection -->
+			</form>
+
+			<form
+				action="/dashboard/loans/{{loan.l_id}}/checkin"
+				method="POST"
+				id="checkinForm"
+				style="display: none;"
+			>
+				<!-- Hidden form for check-in -->
 			</form>
 		</div>
 	</div>
