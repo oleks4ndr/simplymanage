@@ -3,40 +3,28 @@
 
   <section class="loans-section">
     <h2>Pending</h2>
-    {{#if pendingLoans.length}}
+    {{#if pendingCartItems.length}}
       <ul class="loan-list">
-        {{#each pendingLoans}}
+        {{#each pendingCartItems}}
           <li class="loan-card">
             <div class="loan-header">
-              <div class="loan-title">Loan #{{l_id}}</div>
-              <span class="badge badge-warning">{{displayStatus}}</span>
+              <div class="loan-title">{{it_name}}</div>
+              <span class="badge badge-warning">Pending</span>
             </div>
             <div class="loan-meta">
-              <div>Checked Out: Pending</div>
-              {{#if l_due_at}}
-                <div>Due: {{l_due_at}}</div>
+              <div>Quantity: {{quantity}}</div>
+              <div>Available now: {{available_count}}</div>
+            </div>
+            <div class="loan-items">
+              {{#if it_image_url}}
+                <img src="{{it_image_url}}" alt="{{it_name}}" class="loan-item-img" />
               {{/if}}
             </div>
-            {{#if items.length}}
-              <ul class="loan-items">
-                {{#each items}}
-                  <li class="loan-item">
-                    {{#if it_image_url}}
-                      <img src="{{it_image_url}}" alt="{{it_name}}" class="loan-item-img" />
-                    {{/if}}
-                    <span class="loan-item-name">{{it_name}}</span>
-                    <span class="loan-item-id">(Asset #{{a_id}})</span>
-                  </li>
-                {{/each}}
-              </ul>
-            {{else}}
-              <div class="empty-state">No items in this loan yet.</div>
-            {{/if}}
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <div class="empty-state">You have no pending loans.</div>
+      <div class="empty-state">Your cart is empty. Add items from the Catalog to create a pending loan.</div>
     {{/if}}
   </section>
 

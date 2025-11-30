@@ -9,18 +9,27 @@ router.get('/', async (req, res) => {
   try {
     const userId = req.session.user.u_id;
 
-    // Fetch pending loans (not yet checked out)
-    const pendingRows = await query(
-      `SELECT l.l_id, l.l_status, l.l_checked_out_at, l.l_due_at, l.l_checked_in_at,
-              a.a_id, it.it_name, it.it_image_url
-         FROM loans l
-         LEFT JOIN loan_details ld ON ld.l_id = l.l_id
-         LEFT JOIN assets a ON a.a_id = ld.a_id
-         LEFT JOIN items it ON it.it_id = a.it_id
-        WHERE l.u_id = ? AND l.l_checked_out_at IS NULL
-        ORDER BY l.l_id DESC`,
-      [userId]
-    );
+    // Pending = items in the user's cart (not yet checked out)
+    const cart = req.session.cart || [];
+    let pendingCartItems = [];
+    if (cart.length > 0) {
+      const itemIds = cart.map(c => c.itemId);
+      const placeholders = itemIds.map(() => '?').join(',');
+      const rows = await query(
+        `SELECT 
+            i.*,
+            COUNT(CASE WHEN a.a_status = 'available' THEN 1 END) as available_count
+         FROM items i
+         LEFT JOIN assets a ON i.it_id = a.it_id
+         WHERE i.it_id IN (${placeholders})
+         GROUP BY i.it_id`,
+        itemIds
+      );
+      pendingCartItems = rows.map(item => ({
+        ...item,
+        quantity: cart.find(c => c.itemId === item.it_id)?.quantity || 1
+      }));
+    }
 
     // Fetch current loans (checked out but not yet checked in)
     const currentRows = await query(
@@ -59,16 +68,12 @@ router.get('/', async (req, res) => {
       return Array.from(map.values());
     }
 
-    const pendingLoans = groupLoans(pendingRows).map(l => ({
-      ...l,
-      displayStatus: 'Pending',
-    }));
     const currentLoans = groupLoans(currentRows).map(l => ({
       ...l,
       displayStatus: 'Checked Out',
     }));
 
-    return res.render('loans', { pendingLoans, currentLoans });
+    return res.render('loans', { pendingCartItems, currentLoans });
   } catch (err) {
     console.error('Error fetching loans:', err);
     res.status(500).send('Error loading loans');
