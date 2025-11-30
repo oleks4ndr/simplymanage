@@ -75,7 +75,10 @@ router.post('/login', async (req, res, next) => {
 
     // persist session and redirect
     req.session.save(err => {
-      if (err) return next(err);
+      if (err) {
+        console.error('Session save error:', err);
+        return next(err);
+      }
       
       // Redirect based on role
       if (user.u_role === 'admin' || user.u_role === 'staff') {

@@ -82,7 +82,26 @@ app.use(express.urlencoded({ extended: false}));
 
 // express-mysql-session exports a factory that needs the session module
 const MySQLStore = mysqlSession(session);
-const sessionStore = new MySQLStore({}, pool);
+const sessionStore = new MySQLStore({
+  // Create table if it doesn't exist
+  createDatabaseTable: true,
+  clearExpired: true,
+  checkExpirationInterval: 900000, // 15 minutes
+  expiration: 86400000, // 1 day
+  schema: {
+    tableName: 'sessions',
+    columnNames: {
+      session_id: 'session_id',
+      expires: 'expires',
+      data: 'data'
+    }
+  }
+}, pool);
+
+// Log session store errors
+sessionStore.on('error', (error) => {
+  console.error('Session store error:', error);
+});
 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'change-this',
@@ -91,9 +110,11 @@ app.use(session({
   store: sessionStore,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: 'lax',
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-  }
+  },
+  rolling: true
 }));
 
 // Make user available to all views
@@ -158,10 +179,7 @@ function requireRole(...roles) {
   };
 }
 
-app.use((req, res, next) => {
-  console.log(req.session.user);
-  next();
-})
+
 
 // ------ Test SQL DB ----------
 app.get('/test-db', async (req, res) => {

@@ -182,18 +182,18 @@ INSERT INTO categories_children (cat_id, cat_child_id) VALUES
 
 /* ITEMS (12) */
 INSERT INTO items (it_id, it_name, it_sku, it_description, it_image_url, it_max_time_out, it_active, it_renewable, cat_id) VALUES
-(1,  'Canon EOS R6',            'CAM-R6-001', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
-(2,  'Sony A7 III',             'CAM-A7-002', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
-(3,  'Nikon Z6 II',             'CAM-Z6-003', 'Full-frame mirrorless camera',                 'http://placehold.co/500', 72, 1, 1, 1),
-(4,  '24-70mm f/2.8 Lens',      'LEN-2470-01','Versatile standard zoom lens',                 'http://placehold.co/500', 48, 1, 1, 2),
-(5,  '50mm f/1.8 Lens',         'LEN-50-002', 'Prime lens for portraits',                     'http://placehold.co/500', 48, 1, 1, 2),
-(6,  'Manfrotto Tripod',        'TRI-MAN-01', 'Sturdy aluminum tripod',                       'http://placehold.co/500', 48, 1, 1, 3),
-(7,  'RØDE VideoMic Pro+',      'MIC-RVP-01', 'On-camera shotgun microphone',                 'http://placehold.co/500', 48, 1, 1, 5),
-(8,  'Zoom H6 Recorder',        'AUD-H6-001', 'Portable audio recorder (4 XLR)',              'http://placehold.co/500', 48, 1, 1, 4),
-(9,  'Aputure LED Light',       'LGT-APT-01', 'Bi-color LED panel light',                     'http://placehold.co/500', 48, 1, 1, 6),
-(10, 'NP-F970 Battery',         'BAT-NPF-01', 'High-capacity battery pack',                   'http://placehold.co/500', 24, 1, 1, 7),
-(11, 'HDMI 2.1 Cable 3m',       'CBL-HDMI-3', 'High-speed HDMI cable 3 meters',               'http://placehold.co/500', 24, 1, 1, 8),
-(12, 'DJI Mini 3 Pro',          'DRN-MIN3-1', 'Lightweight drone with 4K video',              'http://placehold.co/500', 24, 1, 0, 9);
+(1,  'Canon EOS R6',            'CAM-R6-001', 'Full-frame mirrorless camera',                 'https://m.media-amazon.com/images/I/71RZWZo6r-L.jpg', 72, 1, 1, 1),
+(2,  'Sony A7 III',             'CAM-A7-002', 'Full-frame mirrorless camera',                 'https://m.media-amazon.com/images/I/517CEyCXIHL._AC_UF894,1000_QL80_.jpg', 72, 1, 1, 1),
+(3,  'Nikon Z6 II',             'CAM-Z6-003', 'Full-frame mirrorless camera',                 'https://images.cdn.us-central1.gcp.commercetools.com/f7c8f2bb-aff1-4581-a826-1ad2527be222/FrontLeft-1659-Z6II--IzgIDCo_.png', 72, 1, 1, 1),
+(4,  '24-70mm f/2.8 Lens',      'LEN-2470-01','Versatile standard zoom lens',                 'https://m.media-amazon.com/images/I/91Aa248uhbL._AC_UF894,1000_QL80_.jpg', 48, 1, 1, 2),
+(5,  '50mm f/1.8 Lens',         'LEN-50-002', 'Prime lens for portraits',                     'https://m.media-amazon.com/images/I/61qoFHdQ6JL.jpg', 48, 1, 1, 2),
+(6,  'Manfrotto Tripod',        'TRI-MAN-01', 'Sturdy aluminum tripod',                       'https://www.filmtools.com/media/catalog/product/m/a/manfrotto-mt055xpro3.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=521&width=521&canvas=521:521', 48, 1, 1, 3),
+(7,  'RØDE VideoMic Pro+',      'MIC-RVP-01', 'On-camera shotgun microphone',                 'https://m.media-amazon.com/images/I/817vbPleGML.jpg', 48, 1, 1, 5),
+(8,  'Zoom H6 Recorder',        'AUD-H6-001', 'Portable audio recorder (4 XLR)',              'https://dt7v1i9vyp3mf.cloudfront.net/styles/news_large/s3/imagelibrary/Z/Zoom-H6-01-tKEYlIeMBBPfbNpRAfW9wdxHMc5w6ZyM.jpg', 48, 1, 1, 4),
+(9,  'Aputure LED Light',       'LGT-APT-01', 'Bi-color LED panel light',                     'https://cdn11.bigcommerce.com/s-fc1fc/images/stencil/1280x1280/products/47430/149730/1604050541_1512600__06953.1612977096.jpg?c=2', 48, 1, 1, 6),
+(10, 'NP-F970 Battery',         'BAT-NPF-01', 'High-capacity battery pack',                   'https://m.media-amazon.com/images/I/61b4wMpdyoL.jpg', 24, 1, 1, 7),
+(11, 'HDMI 2.1 Cable 3m',       'CBL-HDMI-3', 'High-speed HDMI cable 3 meters',               'https://media.startech.com/cms/products/gallery_large/hdmm21vxm.main.jpg', 24, 1, 1, 8),
+(12, 'DJI Mini 3 Pro',          'DRN-MIN3-1', 'Lightweight drone with 4K video',              'https://m.media-amazon.com/images/I/61Y1P6uIRFL._AC_UF894,1000_QL80_.jpg', 24, 1, 0, 9);
 
 /* LOCATIONS (10) */
 INSERT INTO locations (loc_id, loc_name, loc_address) VALUES
